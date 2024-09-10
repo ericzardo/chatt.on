@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String   @id @default(uuid())
+  username            String   @unique
+  email               String?  @unique
+  password            String
+  profile_picture_url String   @default("https://mentesmart.com.br/src/assets/img/clients/1.jpeg")
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+  is_temporary_user   Boolean  @default(false)
+
+  roles            Role[]             @relation("UserRoles")
+  Message          Message[]
+  chats            Chat[]             @relation("UserChats")
+  UserChatActivity UserChatActivity[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String @id @default(uuid())
+  name        String @unique
+  permissions Json   @default("{}")
+
+  users User[] @relation("UserRoles")
+
+  @@map("roles")
+}
+
+model Theme {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  number_of_chats Int      @default(0)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  chats Chat[]
+
+  @@map("themes")
+}
+
+model Chat {
+  id                String   @id @default(uuid())
+  name              String   @unique
+  banner_image_url  String
+  description       String
+  participant_count Int      @default(0)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  theme_id String
+  theme    Theme  @relation(fields: [theme_id], references: [id])
+
+  messages         Message[]
+  users            User[]             @relation("UserChats")
+  UserChatActivity UserChatActivity[]
+
+  @@map("chats")
+}
+
+model Message {
+  id          String @id @default(uuid())
+  content     String
+  sender_id   String
+  chat_id     String
+  description String @default("")
+
+  chat   Chat  @relation(fields: [chat_id], references: [id])
+  sender User? @relation(fields: [sender_id], references: [id])
+
+  @@map("messages")
+}
+
+model UserChatActivity {
+  id          String   @id @default(uuid())
+  user_id     String
+  chat_id     String
+  last_active DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  chat Chat @relation(fields: [chat_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, chat_id])
+  @@map("user_chat_activities")
+}
