@@ -6,6 +6,7 @@ async function getRoles(app) {
     '/roles',
     async (request, reply) => {
       const roles = await prisma.role.findMany({
+        include: { users: true },
         orderBy: { name: 'asc' },
       });
 

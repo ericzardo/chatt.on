@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 
-import { Activity, Database, User, List, MessageCircle, ChevronLeft } from "react-feather";
+import { Activity, Database, User, List, MessageCircle, ChevronLeft, Code } from "react-feather";
 
 SidebarMenuNav.propTypes = {
   links: PropTypes.arrayOf(
@@ -26,6 +26,11 @@ const linksPropDefault = [
     label: "Dashboard",
     icon: <Activity />,
     href: "/admin",
+  },
+  {
+    label: "Roles",
+    icon: <Code />,
+    href: "/admin/roles",
   },
   {
     label: "Management",

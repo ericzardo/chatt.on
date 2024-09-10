@@ -6,6 +6,7 @@ import AdminHeader from "@components/Header/AdminHeader";
 import UserManager from "../sections/UserManager";
 import ThemesManager from "../sections/ThemesManager";
 import ChatsManager from "../sections/ChatsManager";
+import RolesManager from "../sections/RolesManager";
 
 function AdminHome () {
   const { user } = useUser();
@@ -34,8 +35,8 @@ function AdminHome () {
           {mainPage === "" && (
             <h1 className="text-white">Admin Home</h1>
           )}
-          {mainPage === "settings" && (
-            <h1 className="text-white">Admin Settings</h1>
+          {mainPage === "roles" && (
+            <RolesManager />
           )}
           {mainPage === "management" && subPage === "users" && (
             <UserManager />

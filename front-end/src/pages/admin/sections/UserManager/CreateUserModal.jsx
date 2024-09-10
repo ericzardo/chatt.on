@@ -15,7 +15,7 @@ import RoleCard from "@components/RoleCard";
 import ContainerModal from "@components/modals/ContainerModal";
 import GenerateForm from "@components/utils/GenerateForm";
 
-import getRoles from "@services/getRoles";
+import getRoles from "@services/roles/getRoles";
 import createUser from "@services/users/createUser";
 
 CreateUserModal.propTypes = {
