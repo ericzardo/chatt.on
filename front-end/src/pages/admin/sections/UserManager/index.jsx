@@ -99,7 +99,7 @@ function UserManager () {
       render: (user) => (
         <span className="flex gap-2">
           {user?.roles.map(role => (
-            <RoleCard key={role.name} name={role.name} />
+            <RoleCard key={role.name} role={role} />
           ))}
         </span>
       )

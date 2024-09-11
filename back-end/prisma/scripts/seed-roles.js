@@ -4,6 +4,7 @@ async function main() {
   await prisma.role.create({
     data: {
       name: 'user',
+      color: "red",
       permissions: {},
     },
   });
@@ -11,6 +12,7 @@ async function main() {
   await prisma.role.create({
     data: {
       name: 'admin',
+      color: "blue",
       permissions: {},
     },
   });

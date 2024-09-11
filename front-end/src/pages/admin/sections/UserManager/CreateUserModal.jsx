@@ -26,7 +26,6 @@ function CreateUserModal ({ handleCreateUserModal }) {
   const { handleNotification } = useNotification();
   const [ isRolesDropdownOpen, setIsRolesDropdownOpen ] = useState(false);
   const [ defaultRole, setDefaultRole ] = useState();
-  const roleColorMap = { admin: "blue", user: "red", };
 
   const handleRolesDropdownOpen = useCallback(() => {
     setIsRolesDropdownOpen(prev => !prev);
@@ -156,7 +155,7 @@ function CreateUserModal ({ handleCreateUserModal }) {
             {formManager.watch("roles") && formManager.watch("roles").length > 0 && formManager.watch("roles").map((role) => (
               <RoleCard
                 key={role.name}
-                name={role.name}
+                role={role}
                 removeRole={() => removeRole(role)}
               />
             ))}
@@ -180,7 +179,7 @@ function CreateUserModal ({ handleCreateUserModal }) {
                   >
                     <span className="flex gap-2 items-center">
                       <span
-                        className={`w-3 h-3 bg-${roleColorMap[role.name]}-500 rounded-full`}
+                        className={`w-3 h-3 bg-${role.color}-500 rounded-full`}
                       ></span>
                       <p className="capitalize font-alternates font-semibold text-base text-zinc-600 hover:text-zinc-800 dark:text-zinc-400 hover:dark:text-zinc-200">
                         {role.name}

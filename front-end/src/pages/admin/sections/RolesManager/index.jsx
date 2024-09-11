@@ -17,17 +17,17 @@ import TableSkeleton from "@components/skeleton/TableSkeleton";
 import GenerateForm from "@components/utils/GenerateForm";
 
 import getRoles from "@services/roles/getRoles";
-import createTheme from "@services/themes/createTheme";
-import deleteTheme from "@services/themes/deleteTheme";
+import createRole from "@services/roles/createRole";
+import deleteRole from "@services/roles/deleteRole";
 
 function RolesManager () {
   const { handleNotification } = useNotification();
 
-  const [ isCreateThemeModalOpen, setIsCreateThemeModalOpen ] = useState(false);
+  const [ isCreateRoleModalOpen, setIsCreateRoleModalOpen ] = useState(false);
   const [ isToConfirmAction, setIsToConfirmAction ] = useState(false);
-  const [ themeSelected, setThemeSelected ] = useState(null);
+  const [ roleSelected, setRoleSelected ] = useState(null);
 
-  const { data: roles } = useQuery({
+  const { data: roles, isLoading: isRolesLoading } = useQuery({
     queryKey: ["get-roles"],
     queryFn: () => getRoles(),
     onError: (error) => {
@@ -39,7 +39,7 @@ function RolesManager () {
   });
 
   const createRoleMutation = useMutation({
-    mutationFn: (theme) => createTheme(theme),
+    mutationFn: (role) => createRole(role),
     onSuccess: () => {
       handleNotification({
         model: "success",
@@ -47,7 +47,7 @@ function RolesManager () {
       });
 
       queryClient.invalidateQueries(["get-roles"]);
-      handleCreateThemeModal();
+      handleCreateRoleModal();
     },
     onError: (error) => {
       handleNotification({
@@ -66,7 +66,7 @@ function RolesManager () {
       });
 
       queryClient.invalidateQueries(["get-themes"]);
-      handleCreateThemeModal();
+      handleCreateRoleModal();
     },
     onError: (error) => {
       handleNotification({
@@ -76,54 +76,60 @@ function RolesManager () {
     },
   });
 
-  const confirmDeleteTheme = (theme) => {
-    deleteThemeMutation.mutate(theme);
+  const confirmDeleteRole = (role) => {
+    deleteRoleMutation.mutate(role);
   };
 
-  const createNewTheme = (theme) => {
-    createThemeMutation.mutate(theme);
+  const createNewRole = (role) => {
+    createRoleMutation.mutate(role);
   };
 
-  const handleCreateThemeModal = useCallback(() => {
-    setIsCreateThemeModalOpen(prev => !prev);
+  const handleCreateRoleModal = useCallback(() => {
+    setIsCreateRoleModalOpen(prev => !prev);
   }, []);
 
   const handleConfirmDeleteModal = useCallback(() => {
     setIsToConfirmAction(prev => !prev);
   }, []);
 
-  const handleDeleteTheme = useCallback((theme) => {
-    setThemeSelected(theme);
+  const handleDeleteRole = useCallback((role) => {
+    setRoleSelected(role);
     handleConfirmDeleteModal();
   }, [handleConfirmDeleteModal]);
 
   const columns = [
     { 
-      header: "Name",
-      render: (theme) => (
-        <p className="font-alternates font-semibold text-sm text-zinc-900 dark:text-zinc-300">
-          {theme.name}
-        </p>
+      header: "Roles",
+      render: (role) => (
+        <span className="flex items-center gap-2">
+          <span
+            className={`w-3 h-3 flex items-center justify-center p-0.5 bg-${role.color}-500 rounded-full`}
+          ></span>
+          <p className="font-alternates font-semibold text-sm capitalize text-zinc-900 dark:text-zinc-300">
+            {role.name}
+          </p>
+        </span>
+        
       ) 
     },
     { 
-      header: "Number of Chats",
-      render: (theme) => (
+      header: "Members",
+      render: (role) => (
         <p className="font-alternates font-semibold text-sm text-zinc-900 dark:text-zinc-300">
-          {theme.number_of_chats}
+          {role?.users?.length || 0}
         </p>
       )
     },
     { 
       header: "Actions",
-      render: (theme) => (
+      render: (role) => (
         <span className="flex items-center justify-between">
           <span className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:dark:text-zinc-200 hover:text-zinc-950 transition-colors cursor-pointer">
             <Edit3 className="w-4 h-4 " />
-            <p className="text-sm font-medium">Edit Theme</p>
+            <p className="text-sm font-medium">Edit Role</p>
           </span>
           <X
-            onClick={() => handleDeleteTheme(theme)}
+            onClick={() => handleDeleteRole(role)}
             className="w-5 h-5 dark:text-red-700 text-red-500 flex items-center justify-center cursor-pointer transition-all hover:text-red-600 hover:dark:text-red-500 hover:scale-x-105"
           />
         </span>
@@ -142,54 +148,48 @@ function RolesManager () {
       name: "",
     },
   });
-  const formFields = [{ name: "name", label: "Name", type: "text", placeholder: "Example: Science" }];
+  const formFields = [{ name: "name", label: "Name", type: "text", placeholder: "Example: Moderator" }];
 
   return (
     <div className="w-full px-4 py-6">
       <span className="flex justify-between gap-5 items-start sm:items-center user-manager-header">
         <h1 className="font-bold font-alternates md:text-3xl text-xl leading-relaxed text-zinc-900 dark:text-zinc-300">Roles Management</h1>
         <span className="flex sm:flex-row flex-col items-end sm:items-center gap-3 user-manager-header-action">
-          {themes && themes.length > 0 && (
+          {roles && roles.length > 0 && (
             <Input size="sm" placeholder="Search Roles" icon={<Search className="h-8 w-8 p-2" />} />
           )}
           
-          <Button onClick={handleCreateThemeModal} size="sm">
+          <Button onClick={handleCreateRoleModal} size="sm">
             Add Role
           </Button>
         </span>
       </span>
 
       <div className="overflow-x-auto my-10 rounded-lg flex">
-        {isThemesLoading || !themes ? (
+        {isRolesLoading || !roles ? (
           <TableSkeleton columns={columns} />
-        ) : themes && themes.length > 0 ? (
-          <Table columns={columns} data={themes} />
+        ) : roles && roles.length > 0 ? (
+          <Table columns={columns} data={roles} />
         ) : (
           <div className="mx-auto mt-60 font-bold font-alternates text-3xl text-zinc-800 dark:text-zinc-200">No themes found</div>
         )}
         
       </div>
 
-      {isCreateThemeModalOpen && (
-        <CreateModal title="Create new Theme">
+      {isCreateRoleModalOpen && (
+        <CreateModal title="Create new Role">
           <GenerateForm
             useForm={formManager}
             fields={formFields} 
-            onSubmit={createNewTheme}
-            onClose={handleCreateThemeModal}
+            onSubmit={createNewRole}
+            onClose={handleCreateRoleModal}
             submitLabel="Create"
           />
         </CreateModal>
-        // <CreateThemeModal handleCreateThemeModal={handleCreateThemeModal} />
       )}
       {isToConfirmAction && (
-        <ConfirmDeleteModal item={themeSelected} handleConfirmDeleteModal={handleConfirmDeleteModal} onConfirm={confirmDeleteTheme} />
+        <ConfirmDeleteModal item={roleSelected} handleConfirmDeleteModal={handleConfirmDeleteModal} onConfirm={confirmDeleteRole} />
       )}
-
-      {/* 
-      {isEditRolesModalOpen && (
-        <EditUserRolesModal toggleEditRolesModal={toggleEditRolesModal} />
-      )} */}
     </div>
   );
 }

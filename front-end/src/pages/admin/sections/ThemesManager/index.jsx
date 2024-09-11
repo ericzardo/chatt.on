@@ -180,16 +180,10 @@ function ThemesManager () {
             submitLabel="Create"
           />
         </CreateModal>
-        // <CreateThemeModal handleCreateThemeModal={handleCreateThemeModal} />
       )}
       {isToConfirmAction && (
         <ConfirmDeleteModal item={themeSelected} handleConfirmDeleteModal={handleConfirmDeleteModal} onConfirm={confirmDeleteTheme} />
       )}
-
-      {/* 
-      {isEditRolesModalOpen && (
-        <EditUserRolesModal toggleEditRolesModal={toggleEditRolesModal} />
-      )} */}
     </div>
   );
 }
