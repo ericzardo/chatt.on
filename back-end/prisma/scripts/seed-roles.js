@@ -15,7 +15,7 @@ async function main() {
     },
   });
 
-  console.log("Roles have been seeded.");
+  console.log("\nRoles have been seeded.\n");
 }
 
 main();
