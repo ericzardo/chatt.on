@@ -143,7 +143,7 @@ function EditRolesModal ({ user, handleEditRolesModal }) {
                   >
                     <span className="flex gap-2 items-center">
                       <span
-                        className={`w-3 h-3 bg-${role.color}-500 rounded-full`}
+                        className={`w-3 h-3 bg-[${role.color}] rounded-full`}
                       ></span>
                       <p className="capitalize font-alternates font-semibold text-base text-zinc-600 hover:text-zinc-800 dark:text-zinc-400 hover:dark:text-zinc-200">
                         {role.name}

@@ -15,7 +15,7 @@ ProfileCard.propTypes = {
 function ProfileCard ({ handleProfileCard, targetUser }) {
   const { user } = useUser();
 
-  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [ isEditProfileOpen, setIsEditProfileOpen ] = useState(false);
 
   const handleEditProfile = useCallback(() => {
     setIsEditProfileOpen(prev => !prev);
@@ -51,10 +51,10 @@ function ProfileCard ({ handleProfileCard, targetUser }) {
               <span className="flex gap-2 flex-wrap max-w-40">
                 {displayedUser?.roles?.length  ? (
                   displayedUser?.roles.map(role => (
-                    <RoleCard key={role.name} name={role.name} />
+                    <RoleCard key={role.name} role={role} />
                   ))
                 ) : (
-                  <RoleCard key="user" name="user" />
+                  <RoleCard key="user" />
                 )}
               </span>
             </span>

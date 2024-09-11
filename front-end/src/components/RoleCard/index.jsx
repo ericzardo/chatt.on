@@ -7,7 +7,7 @@ RoleCard.propTypes = {
   removeRole: PropTypes.func,
 };
 
-function RoleCard ({ role, removeRole }) {
+function RoleCard ({ role = { name: "user" }, removeRole }) {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => removeRole && setIsHovered(true);
@@ -23,7 +23,7 @@ function RoleCard ({ role, removeRole }) {
       className={`${removeRole ? "cursor-pointer" : "cursor-auto"} p-2 w-fit h-fit rounded-2xl flex items-center justify-center gap-2 bg-zinc-200 dark:bg-zinc-800`}>
       <span
         onClick={handleRemoveClick}
-        className={`${!removeRole ? "w-3 h-3" : "w-4 h-4"} flex items-center justify-center p-0.5 bg-${role.color}-500 rounded-full`}
+        className={`${!removeRole ? "w-3 h-3" : "w-4 h-4"} flex items-center justify-center p-0.5 bg-[${role.color}] rounded-full`}
         aria-label="Remove role"
       >
         {isHovered && removeRole && role.name !== "user" && (

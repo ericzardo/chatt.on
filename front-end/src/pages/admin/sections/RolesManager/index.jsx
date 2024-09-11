@@ -103,7 +103,7 @@ function RolesManager () {
       render: (role) => (
         <span className="flex items-center gap-2">
           <span
-            className={`w-3 h-3 flex items-center justify-center p-0.5 bg-${role.color}-500 rounded-full`}
+            className={`w-3 h-3 flex items-center justify-center p-0.5 bg-[${role.color}] rounded-full`}
           ></span>
           <p className="font-alternates font-semibold text-sm capitalize text-zinc-900 dark:text-zinc-300">
             {role.name}
