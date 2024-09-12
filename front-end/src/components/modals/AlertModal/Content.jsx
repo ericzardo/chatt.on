@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
 
-MessageModalContent.propTypes = {
+AlertModalContent.propTypes = {
   message: PropTypes.string.isRequired,
 };
 
-function MessageModalContent ({ message }) {
+function AlertModalContent ({ message }) {
   return <p className="text-base">{message}</p>;
 }
 
-export default MessageModalContent;
+export default AlertModalContent;

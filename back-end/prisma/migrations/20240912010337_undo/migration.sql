@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `roles` MODIFY `level` INTEGER NOT NULL DEFAULT 1;

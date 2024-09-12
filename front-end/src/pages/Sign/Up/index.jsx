@@ -72,7 +72,6 @@ function SignUp () {
     }   
   };
 
-
   return (
 
     <SignModal handleSubmit={handleSubmit(createNewUser)} title="Meet new people!" footerDetailsModal={footerDetailsModal} >

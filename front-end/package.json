@@ -29,6 +29,8 @@
     "dotenv": "^16.4.5",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-feather": "^2.0.10",
     "react-hook-form": "^7.51.5",

@@ -1,5 +1,6 @@
 const { z } = require("zod");
 const prisma = require("../../lib/prisma");
+const { ForbiddenError } = require("../../errors")
 
 async function updateProfileUser(app) {
   app.patch(
@@ -16,9 +17,6 @@ async function updateProfileUser(app) {
     },
     async (request, reply) => {
       const user = request.user;
-      console.log("\n")
-      console.log(request.body);
-      console.log("\n")
 
       if (!user) {
         throw new ForbiddenError("User not authenticated.")

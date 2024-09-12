@@ -109,7 +109,7 @@ function UserManager () {
       render: (user) => (
         <span className="flex items-center justify-between">
           <span onClick={() => handleEditRolesModal(user)} className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:dark:text-zinc-200 hover:text-zinc-950 transition-colors cursor-pointer">
-            <Edit3 className="w-4 h-4 " />
+            <Edit3 className="w-4 h-4" />
             <p className="text-sm font-medium">Edit Roles</p>
           </span>
           <X

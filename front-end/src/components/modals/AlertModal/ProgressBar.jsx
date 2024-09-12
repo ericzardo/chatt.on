@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 import { tv } from "tailwind-variants";
 
-MessageModalProgressBar.propTypes = {
+AlertModalProgressBar.propTypes = {
   model: PropTypes.string,
+  duration: PropTypes.number,
 };
 
 const progressBar = tv({
@@ -19,8 +20,14 @@ const progressBar = tv({
   },
 });
 
-function MessageModalProgressBar ({ model }) {
-  return <span className={progressBar({ colors: model })}></span>;
+function AlertModalProgressBar ({ model, duration = 5000 }) {
+
+  return (
+    <span
+      className={progressBar({ colors: model })}
+      style={{ animationDuration: `${duration}ms` }}
+    ></span>
+  );
 }
 
-export default MessageModalProgressBar;
+export default AlertModalProgressBar;

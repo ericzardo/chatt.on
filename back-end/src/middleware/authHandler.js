@@ -3,6 +3,7 @@ const prisma = require("../lib/prisma");
 const { ForbiddenError, NotFoundError, ClientError } = require("../errors");
 
 async function authHandler(request) {
+
   try {
     const token = request.cookies["access-token"];
 
@@ -28,8 +29,24 @@ async function authHandler(request) {
       throw new NotFoundError("User not found.");
     }
 
-    request.user = user;
+    const highestRole = user.roles.reduce((max, role) => (role.level > max.level ? role : max), { level: -1 });
 
+    if (highestRole) {
+      user.permissions = highestRole.permissions;
+    } else {
+      user.permissions = {
+				joinRooms: true,
+				viewRooms: true,
+				manageRoles: false,
+				manageRooms: false,
+				manageUsers: false,
+				sendMessages: true,
+				editUserProfiles: true,
+				viewUserProfiles: true
+			};
+    }
+
+    request.user = user;
   } catch (error) {
     throw new ClientError("Invalid or missing token.")
   }

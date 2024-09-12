@@ -26,8 +26,10 @@ function ChatsManager () {
   const { handleNotification } = useNotification();
 
   const [ searchParams, setSearchParams ] = useSearchParams();
+
   const [ isCreateChatModalOpen, setIsCreateChatModalOpen ] = useState(false);
   const [ isToConfirmAction, setIsToConfirmAction ] = useState(false);
+  const [ isLoadingOnCreation, setIsLoadingOnCreation] = useState(false);
 
   const { data: themes } = useQuery({
     queryKey: ["get-themes"],
@@ -66,6 +68,8 @@ function ChatsManager () {
   const createChatMutation = useMutation({
     mutationFn: ({ themeSelected, data}) => createChat(themeSelected, data),
     onSuccess: () => {
+      setIsLoadingOnCreation(false);
+      
       handleNotification({
         model: "success",
         message: "Chat created successfully.",
@@ -75,6 +79,8 @@ function ChatsManager () {
       handleCreateChatModal();
     },
     onError: (error) => {
+      setIsLoadingOnCreation(false);
+
       handleNotification({
         model: "error",
         message: error.message || "An unexpected error occurred.",
@@ -91,7 +97,7 @@ function ChatsManager () {
       });
 
       queryClient.invalidateQueries(["get-chats"]);
-      handleCreateChatModal();
+      handleConfirmDeleteModal();
     },
     onError: (error) => {
       handleNotification({
@@ -106,6 +112,7 @@ function ChatsManager () {
   };
 
   const createNewChat = (data) => {
+    setIsLoadingOnCreation(true);
     createChatMutation.mutate({ themeSelected, data });
   };
 
@@ -209,7 +216,7 @@ function ChatsManager () {
           )}
           {selectedThemeName && (
             <Button onClick={handleCreateChatModal} size="sm">
-            Add Room
+              Add Room
             </Button>
           )}
           
@@ -237,6 +244,7 @@ function ChatsManager () {
             useForm={formManager}
             onSubmit={createNewChat}
             onClose={handleCreateChatModal}
+            isLoading={isLoadingOnCreation}
           />
         </CreateModal>
       )}

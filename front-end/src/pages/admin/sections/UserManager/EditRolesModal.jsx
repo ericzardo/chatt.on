@@ -25,6 +25,8 @@ function EditRolesModal ({ user, handleEditRolesModal }) {
   const { handleNotification } = useNotification();
   const [ isRolesDropdownOpen, setIsRolesDropdownOpen ] = useState(false);
 
+  const [ isLoadingOnSaving, setIsLoadingOnSaving ] = useState(false);
+
   const handleRolesDropdownOpen = useCallback(() => {
     setIsRolesDropdownOpen(prev => !prev);
   }, []);
@@ -53,6 +55,8 @@ function EditRolesModal ({ user, handleEditRolesModal }) {
   const saveUserRolesMutation = useMutation({
     mutationFn: (data) => updateUserRoles(data),
     onSuccess: () => {
+      setIsLoadingOnSaving(false);
+      
       handleNotification({
         model: "success",
         message: "Updated user roles.",
@@ -62,14 +66,21 @@ function EditRolesModal ({ user, handleEditRolesModal }) {
       handleEditRolesModal();
     },
     onError: (error) => {
+      setIsLoadingOnSaving(false);
+      
       handleNotification({
         model: "error",
         message: error.message || "An unexpected error occurred.",
       });
     },
+    onMutate: () => {
+      
+    }
   });
 
   const saveUserRoles = (data) => {
+    setIsLoadingOnSaving(true);
+
     const { roles } = data;
 
     const userRolesData = {
@@ -113,6 +124,7 @@ function EditRolesModal ({ user, handleEditRolesModal }) {
         onClose={handleEditRolesModal}
         onSubmit={saveUserRoles}
         submitLabel="Save"
+        isLoading={isLoadingOnSaving}
       >
         <LabeledInput name="roles" labelText="Roles">
           <span className="relative py-2 h-12 w-full flex items-center flex-wrap gap-2 font-semibold rounded-lg roles">

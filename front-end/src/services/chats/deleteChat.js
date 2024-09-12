@@ -1,8 +1,7 @@
 import api from "src/lib/axios";
 
 const deleteChat = async (theme, chat) => {
-  console.log(theme);
-  console.log(chat);
+
   try {
     const response = await api.delete(`/${theme.id}/chats/${chat.id}`);
 

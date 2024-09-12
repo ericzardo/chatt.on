@@ -2,10 +2,11 @@ import { useEffect } from "react";
 import { tv } from "tailwind-variants";
 import PropTypes from "prop-types";
 
-MessageModalRoot.propTypes = {
+AlertModalRoot.propTypes = {
   children: PropTypes.node.isRequired,
   model: PropTypes.string,
   onClose: PropTypes.func.isRequired,
+  duration: PropTypes.number,
 };
 
 const messageModal = tv({
@@ -22,16 +23,16 @@ const messageModal = tv({
   },
 });
 
-function MessageModalRoot ({ model, onClose, children }) {
+function AlertModalRoot ({ model, onClose, children, duration = 5000 }) {
   useEffect(() => {
-    const timer = setTimeout(onClose, 5000);
+    const timer = setTimeout(onClose, duration);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [onClose]);
+  }, [onClose, duration]);
 
   return <span className={messageModal({ model })}>{children}</span>;
 }
 
-export default MessageModalRoot;
+export default AlertModalRoot;

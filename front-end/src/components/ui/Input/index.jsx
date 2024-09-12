@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { tv } from "tailwind-variants";
 
 const input = tv({
-  base: "outline-none w-full border-none font-semibold rounded-lg transition-all ease-out duration-300",
+  base: "outline-none w-full border-none font-semibold rounded-lg transition-all ease-out duration-300 bg-transparent",
   variants: {
     size: {
       default: "p-3",

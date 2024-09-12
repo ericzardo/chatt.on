@@ -1,7 +1,7 @@
 import api from "src/lib/axios";
 
 const createChat = async (theme, chatData) => {
-  console.log(theme);
+
   try {
     const response = await api.post(`${theme.id}/chats`, chatData);
 

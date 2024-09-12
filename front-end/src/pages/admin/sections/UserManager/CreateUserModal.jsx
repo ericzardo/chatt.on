@@ -24,8 +24,11 @@ CreateUserModal.propTypes = {
 
 function CreateUserModal ({ handleCreateUserModal }) {
   const { handleNotification } = useNotification();
+
   const [ isRolesDropdownOpen, setIsRolesDropdownOpen ] = useState(false);
   const [ defaultRole, setDefaultRole ] = useState();
+
+  const [ isLoadingOnCreation, setIsLoadingOnCreation ] = useState(false);
 
   const handleRolesDropdownOpen = useCallback(() => {
     setIsRolesDropdownOpen(prev => !prev);
@@ -90,6 +93,8 @@ function CreateUserModal ({ handleCreateUserModal }) {
   const createUserMutation = useMutation({
     mutationFn: (newUser) => createUser(newUser),
     onSuccess: () => {
+      setIsLoadingOnCreation(false);
+
       handleNotification({
         model: "success",
         message: "Account created successfully.",
@@ -99,6 +104,8 @@ function CreateUserModal ({ handleCreateUserModal }) {
       handleCreateUserModal();
     },
     onError: (error) => {
+      setIsLoadingOnCreation(false);
+
       handleNotification({
         model: "error",
         message: error.message || "An unexpected error occurred.",
@@ -107,6 +114,8 @@ function CreateUserModal ({ handleCreateUserModal }) {
   });
 
   const createNewUser = (data) => {
+    setIsLoadingOnCreation(true);
+
     const { watch } = formManager;
 
     const formattedData = {
@@ -149,6 +158,7 @@ function CreateUserModal ({ handleCreateUserModal }) {
         onClose={handleCreateUserModal}
         onSubmit={createNewUser}
         submitLabel="Create"
+        isLoading={isLoadingOnCreation}
       >
         <LabeledInput name="roles" labelText="Roles">
           <span className="relative py-2 h-12 w-full flex items-center flex-wrap gap-2 font-semibold rounded-lg roles">

@@ -30,6 +30,7 @@ model Role {
   name        String @unique
   color       String @unique
   permissions Json   @default("{}")
+  level       Int    @unique @default(1)
 
   users User[] @relation("UserRoles")
 

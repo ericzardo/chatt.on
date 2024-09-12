@@ -6,7 +6,7 @@ const cookie = require("@fastify/cookie");
 const { serializerCompiler, validatorCompiler } = require("fastify-type-provider-zod");
 const { corsConfig, cookieConfig } = require('./config');
 
-const errorHandler = require("./middleware/errorHandler");
+const errorHandler = require("./error-handler");
 const registerRoutes = require("./routes")
 
 const connectionController = require("./controllers/connectionController");

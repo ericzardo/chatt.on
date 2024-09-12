@@ -1,11 +1,11 @@
 import api from "src/lib/axios";
 
-const createRole = async (data) => {
+const updateRole = async (role, data) => {
   try {
-    const response = await api.post("/roles", data);
+    const response = await api.patch(`/roles/${role.id}`, { ...data });
 
-    if (!response.data.role) {
-      throw new Error("Error creating role. Please try again.");
+    if (!response.data) {
+      throw new Error("Error updating role. Please try again.");
     }
 
     return response.data;
@@ -19,4 +19,4 @@ const createRole = async (data) => {
   }
 };
 
-export default createRole;
+export default updateRole;

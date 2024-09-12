@@ -27,6 +27,9 @@ function ThemesManager () {
   const [ isToConfirmAction, setIsToConfirmAction ] = useState(false);
   const [ themeSelected, setThemeSelected ] = useState(null);
 
+  const [ isLoadingOnCreation, setIsLoadingOnCreation ] = useState(false);
+
+
   const { data: themes, isLoading: isThemesLoading } = useQuery({
     queryKey: ["get-themes"],
     queryFn: () => getThemes(1, 10),
@@ -41,6 +44,8 @@ function ThemesManager () {
   const createThemeMutation = useMutation({
     mutationFn: (theme) => createTheme(theme),
     onSuccess: () => {
+      setIsLoadingOnCreation(false);
+
       handleNotification({
         model: "success",
         message: "Theme created successfully.",
@@ -50,6 +55,8 @@ function ThemesManager () {
       handleCreateThemeModal();
     },
     onError: (error) => {
+      setIsLoadingOnCreation(false);
+
       handleNotification({
         model: "error",
         message: error.message || "An unexpected error occurred.",
@@ -66,7 +73,7 @@ function ThemesManager () {
       });
 
       queryClient.invalidateQueries(["get-themes"]);
-      handleCreateThemeModal();
+      handleConfirmDeleteModal();
     },
     onError: (error) => {
       handleNotification({
@@ -81,6 +88,7 @@ function ThemesManager () {
   };
 
   const createNewTheme = (theme) => {
+    setIsLoadingOnCreation(true);
     createThemeMutation.mutate(theme);
   };
 
@@ -178,6 +186,7 @@ function ThemesManager () {
             onSubmit={createNewTheme}
             onClose={handleCreateThemeModal}
             submitLabel="Create"
+            isLoading={isLoadingOnCreation}
           />
         </CreateModal>
       )}

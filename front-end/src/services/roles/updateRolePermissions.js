@@ -1,12 +1,12 @@
 import api from "src/lib/axios";
 
-const createUser = async (user) => {
+const updateRolePermissions = async (role, data) => {
 
   try {
-    const response = await api.post("/users", user);
+    const response = await api.patch(`/roles/${role.id}/permissions`, { ...data });
 
     if (!response.data) {
-      throw new Error("Error creating new user. Please try again.");
+      throw new Error("Error updating role permissions. Please try again.");
     }
 
     return response.data;
@@ -20,4 +20,4 @@ const createUser = async (user) => {
   }
 };
 
-export default createUser;
+export default updateRolePermissions;

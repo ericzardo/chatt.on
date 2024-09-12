@@ -1,4 +1,6 @@
 import PropTypes from "prop-types";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 import { NavigationProvider } from "./NavigationContext";
 import { NotificationProvider } from "./NotificationContext";
@@ -10,13 +12,15 @@ Providers.propTypes = {
 
 function Providers ({ children }) {
   return (
-    <UserProvider >
-      <NavigationProvider>
-        <NotificationProvider>
-          {children}
-        </NotificationProvider>
-      </NavigationProvider>
-    </UserProvider>
+    <DndProvider backend={HTML5Backend}>
+      <UserProvider>
+        <NavigationProvider>
+          <NotificationProvider>
+            {children}
+          </NotificationProvider>
+        </NavigationProvider>
+      </UserProvider>
+    </DndProvider>
   );
 }
 

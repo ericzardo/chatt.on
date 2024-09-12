@@ -11,7 +11,7 @@ function LabeledInput ({ name, labelText, children }) {
     <div className="flex flex-col gap-2 w-full">
       <label
         htmlFor={name}
-        className="text-zinc-700 dark:text-zinc-300"
+        className="text-zinc-700 dark:text-zinc-300 font-semibold"
       >
         {labelText}
       </label>

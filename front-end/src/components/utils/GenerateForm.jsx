@@ -41,7 +41,15 @@ function GenerateForm ({ onSubmit, onClose, fields, isLoading = false, submitLab
            control={control}
            render={({ field }) => (
              <LabeledInput name={name} labelText={label}>
-               <Input type={type} placeholder={placeholder} {...field} />
+               {type === "color" ? (
+                 <Input
+                   type="color"
+                   size="sm"
+                   {...field}
+                 />
+               ) : (
+                 <Input type={type} placeholder={placeholder} {...field} />
+               )}
                {errors[name] && <p className="text-red-500 text-sm">{errors[name]?.message}</p>}
              </LabeledInput>
            )}
@@ -61,7 +69,7 @@ function GenerateForm ({ onSubmit, onClose, fields, isLoading = false, submitLab
           )}
         </Button>
         <Button size="sm" color="transparent" onClick={onClose}>
-        Cancel
+          Cancel
         </Button>
       </div>
     </form>
