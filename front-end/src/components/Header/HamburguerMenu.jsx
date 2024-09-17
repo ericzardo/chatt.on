@@ -74,7 +74,7 @@ function HamburguerMenu ({ toggleHamburguerMenuOpen, links = linksPropDefault })
   ].filter(Boolean);
 
   return (
-    <aside className="fixed z-50 top-0 left-0 h-full flex flex-col px-8 py-4 max-w-60 gap-3 bg-zinc-200 dark:bg-zinc-800 rounded-md overflow-hidden shadow-xl">
+    <aside className="fixed z-50 top-0 left-0 right-0 h-full flex flex-col px-8 py-4 max-w-60 gap-3 bg-zinc-200 dark:bg-zinc-800 rounded-md overflow-hidden shadow-xl">
 
       <div 
         onClick={toggleHamburguerMenuOpen}
@@ -87,7 +87,12 @@ function HamburguerMenu ({ toggleHamburguerMenuOpen, links = linksPropDefault })
       <div className="flex flex-col gap-12">
         {user ? (
           <div className="flex items-center gap-2 cursor-pointer">
-            <span className="w-10 h-10 bg-black rounded-full"></span>
+            <img
+              src={user?.profile_picture_url}
+              alt="User profile picture"
+              className="w-10 h-10 bg-black rounded-full"
+              aria-label="Open user menu"
+            />
             <span className="text-lg font-alternates font-semibold dark:text-zinc-200">{user.username}</span>
           </div>
         ) : (

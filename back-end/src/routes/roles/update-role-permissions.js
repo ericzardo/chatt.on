@@ -1,13 +1,16 @@
 const { z } = require("zod");
 const prisma = require("../../lib/prisma");
 
-const { ForbiddenError, NotFoundError } = require("../../errors")
+const { ForbiddenError, NotFoundError } = require("../../errors");
+
+const authHandler = require("../../middleware/authHandler");
+const permissionHandler = require("../../middleware/permissionHandler");
 
 async function updateProfileUser(app) {
   app.patch(
     "/roles/:roleId/permissions",
     {
-      preHandler: [require("../../middleware/authHandler")],
+      preHandler: [authHandler, permissionHandler("manageRoles")],
       schema: {
         params: z.object({
           roleId: z.string().uuid(),

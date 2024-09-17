@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 
-import { Activity, Database, User, List, MessageCircle, ChevronLeft, Code } from "react-feather";
+import { Activity, Database, User, List, MessageCircle, ChevronLeft, Code, Shield, Lock } from "react-feather";
 
 SidebarMenuNav.propTypes = {
   links: PropTypes.arrayOf(
@@ -28,9 +28,12 @@ const linksPropDefault = [
     href: "/admin",
   },
   {
-    label: "Roles",
-    icon: <Code />,
-    href: "/admin/roles",
+    label: "Access Control",
+    icon: <Shield />,
+    subItems: [
+      { label: "Roles", href: "/admin/access-control/roles", icon: <Code /> },
+      { label: "Permissions", href: "/admin/access-control/permissions", icon: <Lock /> },
+    ],
   },
   {
     label: "Management",
@@ -143,7 +146,7 @@ function SidebarMenuNav ({ links = linksPropDefault }) {
                   to={subHref}
                   onClick={() => handleSubMenu(subLabel)}
                   className={`flex items-center gap-3 px-6 cursor-pointer border-l-2 text-zinc-700 dark:text-zinc-300
-                  ${activeSubItem === subLabel ? "border-blue-500 bg-zinc-300 dark:bg-zinc-950/55" : "border-transparent"}
+                  ${activeSubItem === subLabel ? "border-blue-500" : "border-transparent"}
                   hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors font-alternates font-medium text-base`}
                   aria-label={`Go to ${subHref}`}
                 >

@@ -1,13 +1,17 @@
 
 const { z } = require("zod");
 const prisma = require("../../lib/prisma");
-const { ForbiddenError, ClientError } = require("../../errors")
+
+const { ForbiddenError, ClientError } = require("../../errors");
+
+const authHandler = require("../../middleware/authHandler");
+const permissionHandler = require("../../middleware/permissionHandler");
 
 async function updateRolesLevels(app) {
   app.put(
     "/roles/levels",
     {
-      preHandler: [require("../../middleware/authHandler")],
+      preHandler: [authHandler, permissionHandler("manageRoles")],
       schema: {
         body: z.object({
           roles: z.array(z.object({

@@ -8,13 +8,13 @@ async function main() {
       level: 1,
       permissions:  {
 				joinRooms: true,
-				viewRooms: true,
 				manageRoles: false,
 				manageRooms: false,
 				manageUsers: false,
 				sendMessages: true,
 				editUserProfiles: true,
-				viewUserProfiles: true
+        editUserRoles: true,
+				maxChats: 3
 			},
     },
   });
@@ -26,13 +26,13 @@ async function main() {
       level: 1000,
       permissions:  {
 				joinRooms: true,
-				viewRooms: true,
 				manageRoles: true,
 				manageRooms: true,
 				manageUsers: true,
 				sendMessages: true,
 				editUserProfiles: true,
-				viewUserProfiles: true
+        editUserRoles: true,
+				maxChats: 0
 			},
     },
   });

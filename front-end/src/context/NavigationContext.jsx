@@ -22,7 +22,6 @@ export function NavigationProvider ({ children }) {
   const prevLocation = useRef(location.pathname);
 
   useEffect(() => {
-
     const handleLogout = async () => {
       if (user?.is_temporary_user && !location.pathname.startsWith("/c/") && prevLocation.current !== location.pathname) {
         await authLogout();

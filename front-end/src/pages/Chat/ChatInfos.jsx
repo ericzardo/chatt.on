@@ -11,10 +11,10 @@ ChatInfos.propTypes = {
   isLoading: PropTypes.bool,
   isMobile: PropTypes.bool,
   isChatInfosOpen: PropTypes.bool,
-  toggleChatInfosOpen: PropTypes.func,
+  handleChatInfosOpen: PropTypes.func,
 };
 
-function ChatInfos ({ isLoading = false, isMobile = false, isChatInfosOpen, toggleChatInfosOpen }) {
+function ChatInfos ({ isLoading = false, isMobile = false, isChatInfosOpen, handleChatInfosOpen }) {
   const { user } = useUser();
   const { socket } = useSocket();
   
@@ -26,7 +26,7 @@ function ChatInfos ({ isLoading = false, isMobile = false, isChatInfosOpen, togg
   const [ isProfileModalOpen, setIsProfileModalOpen ] = useState(false);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !user) return;
 
     socket.on("onlineUsers", (userList) => {
       setOnlineUsers(userList);
@@ -41,20 +41,20 @@ function ChatInfos ({ isLoading = false, isMobile = false, isChatInfosOpen, togg
       socket.off("offlineUsers");
     };
 
-  }, [socket]);
+  }, [socket, user]);
 
   const handleUserModal = useCallback((targetUser) => {
     if (targetUser.id === user.id) return;
 
     setSelectedUser(prev => !prev);
     setIsUserModalOpen(prev => !prev);
-  }, [user.id]);
+  }, [user]);
 
   const handleWhisperStart = useCallback((targetUser) => {
     if (targetUser.id === user.id) return;
   
     socket.emit("startWhisper", targetUser);
-  }, [socket, user.id]);
+  }, [socket, user]);
 
   const handleProfileCard = useCallback(() => {
     setIsUserModalOpen(prev => !prev);
@@ -62,11 +62,11 @@ function ChatInfos ({ isLoading = false, isMobile = false, isChatInfosOpen, togg
   }, []);
 
   return (
-    <aside className={`${isMobile && !isChatInfosOpen ? "hidden" : "flex"} ${isMobile && isChatInfosOpen ? "fixed z-50 top-0 right-0 w-fit h-full dark:bg-zinc-800 bg-zinc-300 items-end" : ""}${!isMobile ? "max-w-60 dark:bg-zinc-900/55 bg-zinc-200" : ""} flex-col flex-1 p-2.5 gap-3 rounded-md overflow-hidden shadow-md`}>
+    <aside className={`${isMobile && !isChatInfosOpen ? "hidden" : "flex"} ${isMobile && isChatInfosOpen ? "fixed z-50 top-0 right-0 min-w-full h-full dark:bg-zinc-800 bg-zinc-300" : ""}${!isMobile ? "max-w-60 dark:bg-zinc-900/55 bg-zinc-200" : ""} flex-col flex-1 p-2.5 gap-3 rounded-md overflow-hidden shadow-md`}>
       {isMobile && isChatInfosOpen && (
         <X 
-          onClick={toggleChatInfosOpen}
-          className="w-6 h-6 absolute text-zinc-500 flex items-center justify-center cursor-pointer
+          onClick={handleChatInfosOpen}
+          className="w-6 h-6 absolute text-zinc-500 flex items-center justify-center right-4 top-4 cursor-pointer
            transition-all hover:text-red-700 hover:dark:text-red-500 hover:scale-110"
         />
       )}
@@ -81,7 +81,11 @@ function ChatInfos ({ isLoading = false, isMobile = false, isChatInfosOpen, togg
           ) : (
             onlineUsers.length > 0 && onlineUsers.map((user) => (
               <li key={user.username} onClick={() => handleUserModal(user)} className="flex gap-2 p-1 rounded-lg items-center relative">
-                <span className="w-10 h-10 bg-black rounded-full"></span>
+                <img
+                  src={user?.profile_picture_url}
+                  alt="User profile picture"
+                  className="w-10 h-10 bg-black rounded-full"
+                />
                 <p className="font-alternates font-semibold text-lg leading-relaxed text-zinc-500 dark:text-zinc-400">
                   {user.username}
                 </p>
@@ -116,7 +120,11 @@ function ChatInfos ({ isLoading = false, isMobile = false, isChatInfosOpen, togg
           ) : (
             offlineUsers.length > 0 && offlineUsers.map((user) => (
               <li key={user.username} onClick={() => handleUserModal(user)} className="flex gap-2 p-1 rounded-lg items-center relative">
-                <span className="w-10 h-10 bg-black rounded-full"></span>
+                <img
+                  src={user?.profile_picture_url}
+                  alt="User profile picture"
+                  className="w-10 h-10 bg-black rounded-full"
+                />
                 <p className="font-alternates font-semibold text-lg leading-relaxed text-zinc-500 dark:text-zinc-400">
                   {user.username}
                 </p>

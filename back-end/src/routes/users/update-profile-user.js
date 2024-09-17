@@ -1,16 +1,20 @@
 const { z } = require("zod");
 const prisma = require("../../lib/prisma");
-const { ForbiddenError } = require("../../errors")
+
+const { ForbiddenError } = require("../../errors");
+
+const authHandler = require("../../middleware/authHandler");
+const permissionHandler = require("../../middleware/permissionHandler");
 
 async function updateProfileUser(app) {
   app.patch(
     "/users/profile",
     {
-      preHandler: [require("../../middleware/authHandler")],
+      preHandler: [authHandler, permissionHandler("editUserProfiles")],
       schema: {
         body: z.object({
           username: z.string().min(3).max(24).optional(),
-          profile_picture_url: z.string().url().optional(),
+          profile_picture_url: z.string().optional(),
           email: z.string().email().optional(),
         }),
       },

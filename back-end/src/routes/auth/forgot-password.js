@@ -39,31 +39,30 @@ async function forgotPassword(app) {
       },
     },
     async (request, reply) => {
+      const { email } = request.body;
 
-        const { email } = request.body;
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
 
-        const user = await prisma.user.findUnique({
-          where: { email },
-        });
+      if (!user) {
+        throw new NotFoundError("No account found with that email.");
+      }
 
-        if (!user) {
-          throw new NotFoundError("No account found with that email.");
-        }
+      const accessToken = jwt.sign(
+        { id: user.id },
+        process.env.JWT_SECRET,
+        { expiresIn: '15m' }
+      );
 
-        const accessToken = jwt.sign(
-          { id: user.id },
-          process.env.JWT_SECRET,
-          { expiresIn: '15m' }
-        );
+      const resetPasswordUrl = `${process.env.BASE_URL}/reset-password/${accessToken}`;
+      await sendForgotPasswordEmail(email, resetPasswordUrl);
 
-        const resetPasswordUrl = `${process.env.BASE_URL}/reset-password/${accessToken}`;
-        await sendForgotPasswordEmail(email, resetPasswordUrl);
+      await transporter.sendMail(mailOptions);
 
-        await transporter.sendMail(mailOptions);
-
-        return reply.status(200).send({
-          message: "Password reset link sent to your email.",
-        });    
+      return reply.status(200).send({
+        message: "Password reset link sent to your email.",
+      });    
     }
   );
 }

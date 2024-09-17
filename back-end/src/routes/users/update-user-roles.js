@@ -3,10 +3,14 @@ const prisma = require("../../lib/prisma");
 
 const { NotFoundError, ClientError } = require("../../errors");
 
+const authHandler = require("../../middleware/authHandler");
+const permissionHandler = require("../../middleware/permissionHandler");
+
 async function updateUserRoles(app) {
   app.put(
     "/users/:userId/roles",
     {
+      preHandler: [authHandler, permissionHandler("editUserRoles")],
       schema: {
         params: z.object({
           userId: z.string().uuid(),

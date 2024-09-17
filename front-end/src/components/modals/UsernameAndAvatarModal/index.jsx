@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
@@ -14,6 +14,8 @@ UsernameAndAvatarModal.propTypes = {
 
 function UsernameAndAvatarModal ({ chat, onClose }) {
   const navigate = useNavigate();
+
+  const [selectedAvatar, setSelectedAvatar] = useState(0);
 
   const handleClose = useCallback(() => {
     if (!onClose) return;
@@ -31,8 +33,8 @@ function UsernameAndAvatarModal ({ chat, onClose }) {
       <UsernameAndAvatarModalTitle title="Choose your avatar and username" onClose={handleClose} />
       <div className="flex md:flex-row flex-col md:gap-4 gap-8">
     
-        <UsernameAndAvatarModalAvatarSelection />
-        <UsernameAndAvatarModalUsernameForm chat={chat} />
+        <UsernameAndAvatarModalAvatarSelection selectedAvatar={selectedAvatar} setSelectedAvatar={setSelectedAvatar} />
+        <UsernameAndAvatarModalUsernameForm chat={chat} selectedAvatar={selectedAvatar} />
     
       </div>
     </UsernameAndAvatarModalRoot>

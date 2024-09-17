@@ -12,7 +12,7 @@ model User {
   username            String   @unique
   email               String?  @unique
   password            String
-  profile_picture_url String   @default("https://mentesmart.com.br/src/assets/img/clients/1.jpeg")
+  profile_picture_url String
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
   is_temporary_user   Boolean  @default(false)

@@ -13,13 +13,14 @@ async function createUserWithChat(app) {
         }),
         body: z.object({
           username: z.string(),
+          selectedAvatar: z.number(),
           is_temporary_user: z.boolean().default(true),
         })
       },
     },
     async (request, reply) => {
       const { chatId } = request.params;
-      const { username, is_temporary_user } = request.body;
+      const { username, is_temporary_user, selectedAvatar } = request.body;
 
       const existsUserByUsername = await prisma.user.findFirst({
         where: { username }
@@ -43,8 +44,11 @@ async function createUserWithChat(app) {
             username,
             password: "",
             is_temporary_user,
+            profile_picture_url: `${process.env.R2_PUBLIC_ENDPOINT}/avatar-${selectedAvatar + 1 || 1}`,
             roles: {
-              connect: defaultRole,
+              connect: {
+                id: defaultRole.id,
+              },
             },
           },
         })

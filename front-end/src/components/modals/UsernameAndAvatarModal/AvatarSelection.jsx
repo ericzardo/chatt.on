@@ -1,21 +1,41 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import PropTypes from "prop-types";
+import useNotification from "@hooks/useNotification";
+
 import { ArrowLeftCircle, ArrowRightCircle } from "react-feather";
 
-function UsernameAndAvatarModalavatarListelection () {
+import getAvatars from "@services/images/getAvatars";
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const avatarList = new Array(9).fill(null);
+UsernameAndAvatarModalAvatarSelection.propTypes = {
+  selectedAvatar: PropTypes.number.isRequired,
+  setSelectedAvatar: PropTypes.func.isRequired,
+};
 
-  const handleavatarListelect = (index) => {
-    setSelectedIndex(index);
-  };
+function UsernameAndAvatarModalAvatarSelection ({ selectedAvatar, setSelectedAvatar }) {
+  const { handleNotification } = useNotification();
+
+  const { data: avatars, isLoading: avatarsIsLoading } = useQuery({
+    queryKey: ["get-avatars"],
+    queryFn: () => getAvatars(),
+    retry: 2,
+    onError: (error) => {
+      handleNotification({
+        model: "error",
+        message: error.message || "An unexpected error occurred."
+      });
+    }
+  });
 
   const handleArrowClick = (direction) => {
-    setSelectedIndex((prevIndex) => {
-      return (prevIndex + direction + avatarList.length) % avatarList.length;
+    setSelectedAvatar((prevIndex) => {
+      return (prevIndex + direction + avatars?.length) % avatars?.length;
     });
   };
-    
+
+  if (avatarsIsLoading) {
+    return <h1>Loading avatars...</h1>;
+  }
+
   return (
     <div className="flex flex-col gap-3.5 justify-center">
       <span className="text-zinc-500 flex items-center gap-2 justify-evenly">
@@ -24,7 +44,16 @@ function UsernameAndAvatarModalavatarListelection () {
           className="cursor-pointer hover:scale-105 hover:text-zinc-700 hover:dark:text-zinc-400"
           aria-label="Previous avatar"
         />
-        <span className="md:w-44 md:h-44 w-36 h-36 rounded-full border-2 bg-black border-blue-900"></span>
+        {avatarsIsLoading ? (
+          <h1>Loading...</h1>
+        ): (
+          <img
+            src={avatars[selectedAvatar]}
+            alt="Preview avatar selected"
+            className="md:w-44 md:h-44 w-36 h-36 rounded-full border-2 border-blue-900"
+          />
+        )}
+       
         <ArrowRightCircle
           onClick={() => handleArrowClick(1)}
           className="cursor-pointer hover:scale-105 hover:text-zinc-700 hover:dark:text-zinc-400" 
@@ -33,18 +62,24 @@ function UsernameAndAvatarModalavatarListelection () {
       </span>
               
       <div className="flex flex-wrap justify-center md:gap-3">
-        {avatarList.map((_, index) => (
-          <span
-            key={index}
-            onClick={() => handleavatarListelect(index)}
-            className={`w-9 h-9 m-2 md:m-0 cursor-pointer bg-black rounded-full border-2 
-            ${index === selectedIndex ? "border-blue-900" : "border-transparent"}`}
-            aria-label={`Avatar ${index + 1}`}
-          />
-        ))}
+        {avatarsIsLoading ? (
+          <h1>Loading...</h1>
+        ) : (
+          avatars.map((href, index) => (
+            <img
+              key={index}
+              onClick={() => setSelectedAvatar(index)}
+              src={href}
+              alt={`Avatar ${index}`}
+              aria-label={`Avatar ${index + 1}`}
+              className={`w-9 h-9 m-2 md:m-0 cursor-pointer rounded-full border-2 
+              ${index === selectedAvatar ? "border-blue-900" : "border-transparent"}`}
+            />
+          ))
+        )}
       </div>
     </div>
   );
 }
 
-export default UsernameAndAvatarModalavatarListelection;
+export default UsernameAndAvatarModalAvatarSelection;

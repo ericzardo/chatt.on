@@ -1,13 +1,16 @@
 const { z } = require("zod")
-
 const prisma = require("../../lib/prisma")
+
 const { ForbiddenError, NotFoundError } = require("../../errors");
+
+const authHandler = require("../../middleware/authHandler");
+const permissionHandler = require("../../middleware/permissionHandler");
 
 async function deleteChat(app) {
   app.withTypeProvider().delete(
     "/:themeId/chats/:chatId",
     {
-      preHandler: [require("../../middleware/authHandler")],
+      preHandler: [authHandler, permissionHandler("manageRooms")],
       schema: {
         params: z.object({
           themeId: z.string().uuid(),

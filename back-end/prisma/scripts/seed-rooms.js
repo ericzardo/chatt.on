@@ -8,13 +8,13 @@ async function main() {
       chats: {
         create: [
           {
-            name: "reactjs",
+            name: "ReactJS",
             banner_image_url: "https://example.com/react-banner.png",
             description: "Discuss all things ReactJS",
             participant_count: 0
           },
           {
-            name: "node",
+            name: "Node",
             banner_image_url: "https://example.com/node-banner.png",
             description: "Discuss all things Node.js",
             participant_count: 0

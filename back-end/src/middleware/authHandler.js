@@ -30,19 +30,19 @@ async function authHandler(request) {
     }
 
     const highestRole = user.roles.reduce((max, role) => (role.level > max.level ? role : max), { level: -1 });
-
+    
     if (highestRole) {
       user.permissions = highestRole.permissions;
     } else {
       user.permissions = {
 				joinRooms: true,
-				viewRooms: true,
 				manageRoles: false,
 				manageRooms: false,
 				manageUsers: false,
 				sendMessages: true,
 				editUserProfiles: true,
-				viewUserProfiles: true
+        editUserRoles: false,
+        maxChats: 3
 			};
     }
 

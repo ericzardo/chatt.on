@@ -3,12 +3,14 @@ const prisma = require("../../lib/prisma");
 
 const { ForbiddenError, NotFoundError } = require("../../errors");
 
+const authHandler = require("../../middleware/authHandler");
+const permissionHandler = require("../../middleware/permissionHandler");
 
 async function addUserChat(app) {
   app.withTypeProvider().post(
     '/user-chats/:chatId',
     {
-      preHandler: [require("../../middleware/authHandler")],
+      preHandler: [authHandler, permissionHandler("joinRooms")],
       schema: {
         params: z.object({
           chatId: z.string().uuid(),
@@ -33,6 +35,10 @@ async function addUserChat(app) {
 
       if (!chat) {
         throw new NotFoundError("Chat not found.")
+      }
+
+      if (user.permissions.maxChats > 0 && user.chats.length >= user.permissions.maxChats) {
+        throw new ForbiddenError("Chat limit reached for your plan.")
       }
 
       await prisma.user.update({

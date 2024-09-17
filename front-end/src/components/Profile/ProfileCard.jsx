@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
 import useUser from "@hooks/useUser";
 
@@ -16,6 +16,19 @@ function ProfileCard ({ handleProfileCard, targetUser }) {
   const { user } = useUser();
 
   const [ isEditProfileOpen, setIsEditProfileOpen ] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1000);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 1000);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  },  [user]);
 
   const handleEditProfile = useCallback(() => {
     setIsEditProfileOpen(prev => !prev);
@@ -24,10 +37,10 @@ function ProfileCard ({ handleProfileCard, targetUser }) {
   const isMyProfile = targetUser === user;
 
   const displayedUser = isMyProfile ? user : targetUser;
-
+  console.log(isMobile);
   return (
     <div className="fixed inset-0 z-50 bg-zinc-950/80 flex items-center justify-center">
-      <div className="bg-zinc-100 dark:bg-zinc-900 rounded-xl mx-2 md:m-0 p-5 flex flex-col max-w-[640px] min-w-96">
+      <div className="bg-zinc-100 dark:bg-zinc-900 rounded-xl mx-2 md:m-0 p-5 flex flex-col max-w-[640px]">
 
         <span className="flex justify-between gap-6">
           <p className="font-semibold font-alternates text-xl leading-snug text-zinc-900 dark:text-zinc-50">
@@ -40,9 +53,13 @@ function ProfileCard ({ handleProfileCard, targetUser }) {
           />
         </span>
 
-        <div className="flex justify-between items-center gap-10 py-4">
-          <span className="flex items-center gap-3">
-            <div className="w-28 h-28 relative rounded-full border-2 bg-black border-blue-900"></div>
+        <div className={`${isMobile ? "justify-start" : "justify-between"} flex justify-between items-center gap-10 py-4`}>
+          <span className={`flex gap-3 ${isMobile ? "flex-col" : "items-center"}`}>
+            <img
+              src={user?.profile_picture_url}
+              alt="User profile picture"
+              className="w-28 h-28 relative rounded-full border-2 bg-black border-blue-900"
+            />
 
             <span className="flex flex-col gap-2">
               <p className="font-semibold text-lg dark:text-zinc-200 text-zinc-800">
@@ -68,7 +85,7 @@ function ProfileCard ({ handleProfileCard, targetUser }) {
           )}
 
           {isEditProfileOpen && (
-            <EditProfile handleEditProfile={handleEditProfile} />
+            <EditProfile handleEditProfile={handleEditProfile} isMobile={isMobile} />
           )}
         </div>
       </div>

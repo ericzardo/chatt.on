@@ -1,13 +1,16 @@
-const { z } = require("zod")
-const prisma = require("../../lib/prisma")
+const { z } = require("zod");
+const prisma = require("../../lib/prisma");
 
-const { NotFoundError } = require("../../errors")
+const { NotFoundError } = require("../../errors");
+
+const authHandler = require("../../middleware/authHandler");
+const permissionHandler = require("../../middleware/permissionHandler");
 
 async function deleteRole(app) {
   app.withTypeProvider().delete(
     '/roles/:roleId',
     {
-      preHandler: [require("../../middleware/authHandler")],
+      preHandler: [authHandler, permissionHandler("manageRoles")],
       schema: {
         params: z.object({
           roleId: z.string().uuid(),

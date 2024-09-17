@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { useNavigate, Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +15,7 @@ import createUserWithChat from "@services/users/createUserWithChat";
 
 UsernameAndAvatarModalUsernameForm.propTypes = {
   chat: PropTypes.object.isRequired,
+  selectedAvatar: PropTypes.number.isRequired,
 };
 
 const schema = z.object({
@@ -23,7 +25,7 @@ const schema = z.object({
     .max(24, "Username must have a maximum of 24 characters"),
 });
 
-function UsernameAndAvatarModalUsernameForm ({ chat }) {
+function UsernameAndAvatarModalUsernameForm ({ chat, selectedAvatar }) {
   const { revalidateUser } = useUser();
   const { handleNotification } = useNotification();
   
@@ -38,7 +40,7 @@ function UsernameAndAvatarModalUsernameForm ({ chat }) {
 
   const connectUserToChat = async (data) => {
     try {
-      const response = await createUserWithChat(data, chat);
+      const response = await createUserWithChat({ ...data, selectedAvatar }, chat);
 
       if (!response.user) {
         handleNotification({

@@ -1,14 +1,16 @@
-const { z } = require("zod")
+const { z } = require("zod");
+const prisma = require("../../lib/prisma");
 
-const prisma = require("../../lib/prisma")
+const { ClientError } = require("../../errors");
 
-const { ClientError } = require("../../errors")
+const authHandler = require("../../middleware/authHandler");
+const permissionHandler = require("../../middleware/permissionHandler");
 
 async function createChat(app) {
   app.withTypeProvider().post(
     "/:themeId/chats",
     {
-      preHandler: [require("../../middleware/authHandler")],
+      preHandler: [authHandler, permissionHandler("manageRooms")],
       schema: {
         body: z.object({
           name: z.string().min(4),

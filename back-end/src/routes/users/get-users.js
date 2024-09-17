@@ -1,10 +1,14 @@
 const { z } = require("zod");
 const prisma = require("../../lib/prisma");
 
+const authHandler = require("../../middleware/authHandler");
+const permissionHandler = require("../../middleware/permissionHandler");
+
 async function getUsers(app) {
   app.withTypeProvider().get(
     '/users',
     {
+      preHandler: [authHandler, permissionHandler("manageUsers")],
       schema: {
         querystring: z.object({
           page: z.preprocess((val) => (val ? parseInt(val, 10) : 1), z.number().min(1).default(1)),
@@ -48,7 +52,7 @@ async function getUsers(app) {
           }
         }
       });
-
+      
       return reply.status(200).send({
         users,
         message: "Users retrieved successfully"

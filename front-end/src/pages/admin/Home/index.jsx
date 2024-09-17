@@ -3,10 +3,10 @@ import useUser from "@hooks/useUser";
 
 import SidebarMenu from "@components/SideBarMenu.jsx";
 import AdminHeader from "@components/Header/AdminHeader";
-import UserManager from "../sections/UserManager";
-import ThemesManager from "../sections/ThemesManager";
-import ChatsManager from "../sections/ChatsManager";
-import RolesManager from "../sections/RolesManager";
+import UserManager from "../DatabaseManager/UserManager";
+import ThemesManager from "../DatabaseManager/ThemesManager";
+import ChatsManager from "../DatabaseManager/ChatsManager";
+import RolesManager from "../AcessControl/Roles";
 
 function AdminHome () {
   const { user } = useUser();
@@ -35,7 +35,10 @@ function AdminHome () {
           {mainPage === "" && (
             <h1 className="text-white">Admin Home</h1>
           )}
-          {mainPage === "roles" && (
+          {mainPage === "access-control" && subPage === "roles" && (
+            <RolesManager />
+          )}
+          {mainPage === "access-control" && subPage === "permissions" && (
             <RolesManager />
           )}
           {mainPage === "management" && subPage === "users" && (

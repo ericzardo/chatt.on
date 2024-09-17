@@ -1,9 +1,10 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import useUser from "@hooks/useUser";
+import useNotification from "@hooks/useNotification";
 
 import { Edit3, X } from "react-feather";
 import Button from "@components/ui/Button";
@@ -11,21 +12,21 @@ import LabeledInput from "@components/ui/LabeledInput";
 import Input from "@components/ui/Input";
 
 import updateUserProfile from "@services/users/updateUserProfile";
-import useNotification from "@hooks/useNotification";
+import getPresignedUrl from "@services/images/getPresignedUrl";
+import uploadImage from "@services/images/uploadImage";
 
 EditProfile.propTypes = {
   handleEditProfile: PropTypes.func.isRequired,
+  isMobile: PropTypes.number,
 };
 
-function EditProfile ({ handleEditProfile }) {
+function EditProfile ({ handleEditProfile, isMobile }) {
   const { handleNotification } = useNotification();
   const { user, revalidateUser } = useUser();
 
   const fileInputRef = useRef(null);
-
-  const handleEditImageClick = useCallback(() => {
-    fileInputRef.current.click();
-  }, []);
+  const [imagePreview, setImagePreview] = useState(user?.profile_picture_url || "");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(z.object({
@@ -41,10 +42,56 @@ function EditProfile ({ handleEditProfile }) {
     },
   });
 
+  const handleEditImageClick = useCallback(() => {
+    fileInputRef.current.click();
+  }, []);
+
+  const handleFileChange = useCallback((event) => {
+    const file = event.target.files[0];
+    
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+
+      setSelectedFile(file);
+    }
+  }, []);
+
+  const handleImageUpload = async (file) => {
+    try {
+      const { name: fileName, type: fileType, size: fileSize } = file;
+      const data = { fileName, fileType, fileSize };
+
+      const { signedUrl: presignedUrl, imageUrl } = await getPresignedUrl(data);
+
+      await uploadImage(presignedUrl, file);
+
+      return imageUrl;
+    } catch (error) {
+      handleNotification({
+        model: "error",
+        message: error.message || "An unexpected error occurred.",
+      });
+    }
+  };
+
   const editProfile = async (data) => {
 
     try {
-      const response = await updateUserProfile(data);
+      let imageUrl = imagePreview;
+
+      if (selectedFile) {
+        imageUrl = await handleImageUpload(selectedFile);
+      }
+
+      const response = await updateUserProfile({
+        ...data,
+        // eslint-disable-next-line camelcase
+        profile_picture_url: imageUrl
+      });
 
       if (!response.user) {
         handleNotification({
@@ -68,7 +115,7 @@ function EditProfile ({ handleEditProfile }) {
   return (
     <div className="fixed inset-0 z-50 bg-zinc-950/80 flex items-center justify-center">
         
-      <div className="bg-zinc-100 dark:bg-zinc-900 rounded-xl mx-2 md:m-0 p-5 flex flex-col gap-3 min-w-96">
+      <div className="bg-zinc-100 dark:bg-zinc-900 rounded-xl mx-2 md:m-0 p-5 flex flex-col gap-3">
 
         <span className="flex justify-between gap-6">
           <p 
@@ -82,9 +129,14 @@ function EditProfile ({ handleEditProfile }) {
           />
         </span>
 
-        <form onSubmit={handleSubmit(editProfile)} className="flex justify-between gap-10">
-          <span className="flex gap-3">
+        <form onSubmit={handleSubmit(editProfile)} className={`${isMobile ? "flex-col items-center" : "flex justify-between"} gap-10`}>
+          <span className={`flex gap-3 ${isMobile ? "justify-center mt-2 mb-2" : ""}`}>
             <div className="w-28 h-28 relative rounded-full border-2 bg-black border-blue-900">
+              <img
+                src={imagePreview}
+                alt="Profile"
+                className="w-full h-full object-cover rounded-full"
+              />
               <div
                 className="flex items-center justify-center p-2 absolute w-8 h-8 bg-zinc-100 dark:bg-zinc-900 border-blue-500 border right-2 bottom-0 rounded-full transition-transform cursor-pointer hover:scale-105"
                 onClick={handleEditImageClick}
@@ -97,6 +149,7 @@ function EditProfile ({ handleEditProfile }) {
                 type="file"
                 accept="image/*"
                 className="hidden"
+                onChange={handleFileChange}
               />
             </div>
 

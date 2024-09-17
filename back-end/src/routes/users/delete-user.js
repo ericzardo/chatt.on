@@ -3,11 +3,14 @@ const prisma = require("../../lib/prisma")
 
 const { ForbiddenError, NotFoundError } = require("../../errors");
 
+const authHandler = require("../../middleware/authHandler");
+const permissionHandler = require("../../middleware/permissionHandler");
+
 async function deleteUser(app) {
   app.withTypeProvider().delete(
     '/users/:userId',
     {
-      preHandler: [require("../../middleware/authHandler")],
+      preHandler: [authHandler, permissionHandler("manageUsers")],
       schema: {
         params: z.object({
           userId: z.string().uuid(),

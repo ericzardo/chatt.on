@@ -1,6 +1,4 @@
-
 const prisma = require("../../lib/prisma");
-
 
 async function getThemes(app) {
   app.withTypeProvider().get(

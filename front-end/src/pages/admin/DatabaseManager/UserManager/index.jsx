@@ -83,7 +83,11 @@ function UserManager () {
       header: "Username",
       render: (user) => (
         <span className="flex gap-2 items-center">
-          <span className="w-8 h-8 m-2 md:m-0 bg-black rounded-full"></span>
+          <img
+            src={user?.profile_picture_url}
+            alt="User profile picture"
+            className="w-8 h-8 m-2 md:m-0 bg-black rounded-full"
+          />
           <span className="flex flex-col gap-1 flex-start">
             <p className="font-alternates font-semibold text-sm text-zinc-900 dark:text-zinc-300">
               {user.username}

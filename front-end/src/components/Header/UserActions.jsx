@@ -32,8 +32,13 @@ function HeaderUserActions () {
     <span className="flex relative flex-1 items-center justify-end gap-6">
       {user && !user.is_temporary_user ? (
         <span className="relative flex items-center gap-4">
-          
-          <span onClick={handleUserDropdownVisible} className="w-12 h-12 bg-black rounded-full cursor-pointer" aria-label="User menu" />
+          <img
+            src={user?.profile_picture_url}
+            alt="User profile picture"
+            className="w-12 h-12 bg-black rounded-full cursor-pointer"
+            aria-label="User menu"
+            onClick={handleUserDropdownVisible}
+          />
 
           {isUserDropdownVisible && (
             <UserDropdown />

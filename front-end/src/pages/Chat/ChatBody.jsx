@@ -13,16 +13,18 @@ import ProfileCard from "@components/Profile/ProfileCard";
 ChatBody.propTypes = {
   isLoading: PropTypes.bool,
   isMobile: PropTypes.bool,
-  toggleChatSidebarOpen: PropTypes.func,
-  toggleChatInfosOpen: PropTypes.func,
+  handleChatSidebarOpen: PropTypes.func,
+  handleChatInfosOpen: PropTypes.func,
 };
 
-function ChatBody ({ isLoading = false, isMobile = false, toggleChatSidebarOpen, toggleChatInfosOpen }) {
+function ChatBody ({ isLoading = false, isMobile = false, handleChatSidebarOpen, handleChatInfosOpen }) {
   const { user } = useUser();
   const { socket } = useSocket();
 
   const [ chatHistory, setChatHistory ] = useState([]);
   const [ message, setMessage ] = useState("");
+  const [ isSendingDisabled, setIsSendingDisabled ] = useState(false);
+  const [ showTimeoutMessage, setShowTimeoutMessage ] = useState(false);
 
   const [ isUserModalOpen, setIsUserModalOpen ] = useState(false);
   const [ selectedUser, setSelectedUser ] = useState(null);
@@ -53,10 +55,14 @@ function ChatBody ({ isLoading = false, isMobile = false, toggleChatSidebarOpen,
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory]);
-  
 
   const handleSend = useCallback(() => {
     if (!message.trim()) return; 
+
+    if (isSendingDisabled) {
+      setShowTimeoutMessage(true);
+      return;
+    }
 
     setMessage("");
 
@@ -68,7 +74,15 @@ function ChatBody ({ isLoading = false, isMobile = false, toggleChatSidebarOpen,
     const isWhisperChat = chatName.startsWith("@");
     
     socket.emit("sendMessage", isWhisperChat ? chatName.slice(1) : chatName, messageInfos);
-  }, [chatName, message, socket, user]);
+    
+    setIsSendingDisabled(true);
+
+    setTimeout(() => {
+      setIsSendingDisabled(false);
+      setShowTimeoutMessage(false);
+    }, 2000);
+
+  }, [chatName, message, socket, user, isSendingDisabled]);
 
   const handleKeyDown = useCallback((e) => {
     if (e.key.toLowerCase() === "enter") {
@@ -81,7 +95,7 @@ function ChatBody ({ isLoading = false, isMobile = false, toggleChatSidebarOpen,
 
     setSelectedUser(targetUser);
     setIsUserModalOpen(prev => !prev);
-  }, [user.id]);
+  }, [user]);
 
   const handleProfileCard = useCallback(() => {
     setIsUserModalOpen(prev => !prev);
@@ -92,14 +106,13 @@ function ChatBody ({ isLoading = false, isMobile = false, toggleChatSidebarOpen,
     if (targetUser.id === user.id) return;
   
     socket.emit("startWhisper", targetUser);
-  }, [socket, user.id]);
-
+  }, [socket, user]);
 
   return (
     <div className="dark:bg-zinc-900 flex-1 relative bg-zinc-200 rounded-md overflow-hidden shadow-md flex flex-col justify-between">
 
       {isMobile && (
-        <ChatHeader chatName={chatName} toggleChatSidebarOpen={toggleChatSidebarOpen} toggleChatInfosOpen={toggleChatInfosOpen} />
+        <ChatHeader chatName={chatName} handleChatSidebarOpen={handleChatSidebarOpen} handleChatInfosOpen={handleChatInfosOpen} />
       )}
 
       <div className={"flex flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden p-5 pb-6"}>
@@ -111,7 +124,13 @@ function ChatBody ({ isLoading = false, isMobile = false, toggleChatSidebarOpen,
 
             return (
               <div key={`${user.username}${timestamp}`} className="flex gap-2 items-start relative">
-                <span onClick={() => handleUserModal(user)} className="w-8 h-8 bg-black rounded-full flex-shrink-0 cursor-pointer"></span>
+                <img
+                  src={user?.profile_picture_url}
+                  alt="User profile picture"
+                  className="w-8 h-8 bg-black rounded-full flex-shrink-0 cursor-pointer"
+                  aria-label="Open guest actions"
+                  onClick={() => handleUserModal(user)}
+                />
                 <div className="flex flex-col">
                   <span className="flex gap-3 items-center cursor-pointer" onClick={() => handleUserModal(user)}>
                     <p className="font-alternates font-semibold text-lg leading-5 dark:text-zinc-200 text-zinc-800">{user.username}</p>
@@ -146,7 +165,6 @@ function ChatBody ({ isLoading = false, isMobile = false, toggleChatSidebarOpen,
         <div ref={messagesEndRef} />
       </div>
 
-          
       <div className="px-5 pb-10">
         <span className="relative w-full flex mx-auto min-w-max max-w-[700px]">
           <Input
@@ -157,12 +175,17 @@ function ChatBody ({ isLoading = false, isMobile = false, toggleChatSidebarOpen,
             onKeyDown={handleKeyDown}
           />
           <button
-            className="absolute right-0 top-0 h-full font-semibold text-base font-alternates leading-relaxed rounded-lg px-4 py-1 flex items-center justify-center gap-1 bg-blue-500 text-zinc-200 hover:text-zinc-100 hover:bg-blue-600 hover:dark:bg-blue-500/75"
+            className={`absolute right-0 top-0 h-full font-semibold text-base font-alternates leading-relaxed rounded-lg px-4 py-1 flex items-center justify-center gap-1 
+              bg-blue-500 hover:bg-blue-600 hover:dark:bg-blue-500/75 text-zinc-200 hover:text-zinc-100`}
             onClick={handleSend}
+            disabled={isSendingDisabled}
           >
-        Send
+            Send
             <CornerDownRight className="h-6 w-6 text-zinc-200 hover:text-zinc-100" />
           </button>
+          {showTimeoutMessage && (
+            <p className="absolute top-full text-xs dark:text-red-500 text-red-600 font-alternates leading-relaxed">You are sending messages too fast</p>
+          )}
         </span>
       </div>
       

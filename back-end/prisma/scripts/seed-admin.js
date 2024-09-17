@@ -9,6 +9,7 @@ async function main() {
       username: process.env.ADMIN_USERNAME,
       email: process.env.ADMIN_EMAIL,
       password: hashedPassword,
+      profile_picture_url: `${process.env.R2_PUBLIC_ENDPOINT}/avatar-${Math.floor(Math.random() * 9) + 1}`,
       roles: {
         connect: [
           { name: "admin" },

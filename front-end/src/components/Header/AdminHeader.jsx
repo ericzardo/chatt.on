@@ -20,12 +20,14 @@ function AdminHeader () {
 
       <div className="relative flex items-center gap-2 cursor-pointer">
         <p className="font-alternates text-base leading-relaxed text-zinc-600 dark:text-zinc-400">{user.username}</p>
-        <span
-          onClick={handleUserDropdown}
+
+        <img
+          src={user?.profile_picture_url}
+          alt="User profile picture"
           className="w-9 h-9 bg-black rounded-full border-2 border-blue-900"
           aria-label="Open user menu"
-        >
-        </span>
+          onClick={handleUserDropdown}
+        />
 
         {isUserDropdownVisible && (
           <UserDropdown />

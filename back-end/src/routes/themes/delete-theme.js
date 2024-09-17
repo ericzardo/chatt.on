@@ -3,11 +3,14 @@ const prisma = require("../../lib/prisma")
 
 const { NotFoundError } = require("../../errors")
 
+const authHandler = require("../../middleware/authHandler");
+const permissionHandler = require("../../middleware/permissionHandler");
+
 async function deleteTheme(app) {
   app.withTypeProvider().delete(
     '/themes/:themeId',
     {
-      preHandler: [require("../../middleware/authHandler")],
+      preHandler: [authHandler, permissionHandler("manageRooms")],
       schema: {
         params: z.object({
           themeId: z.string().uuid(),
