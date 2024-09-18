@@ -7,7 +7,7 @@ const authHandler = require("../../middleware/authHandler");
 const permissionHandler = require("../../middleware/permissionHandler");
 
 async function updateUserRoles(app) {
-  app.put(
+  app.withTypeProvider().put(
     "/users/:userId/roles",
     {
       preHandler: [authHandler, permissionHandler("editUserRoles")],

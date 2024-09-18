@@ -10,7 +10,7 @@ async function addUserChat(app) {
   app.withTypeProvider().post(
     '/user-chats/:chatId',
     {
-      preHandler: [authHandler, permissionHandler("joinRooms")],
+      preHandler: [authHandler, permissionHandler("joinRooms"), permissionHandler("maxChats")],
       schema: {
         params: z.object({
           chatId: z.string().uuid(),
@@ -35,10 +35,6 @@ async function addUserChat(app) {
 
       if (!chat) {
         throw new NotFoundError("Chat not found.")
-      }
-
-      if (user.permissions.maxChats > 0 && user.chats.length >= user.permissions.maxChats) {
-        throw new ForbiddenError("Chat limit reached for your plan.")
       }
 
       await prisma.user.update({

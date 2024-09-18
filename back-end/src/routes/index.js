@@ -4,6 +4,7 @@ const themeRoutes = require("./themes");
 const userRoutes = require("./users");
 const roleRoutes = require("./roles");
 const imagesRoutes = require("./images");
+const permissionRoutes = require("./permissions")
 
 const registerRoutes = (app) => {
   authRoutes(app);
@@ -12,6 +13,7 @@ const registerRoutes = (app) => {
   userRoutes(app);
   roleRoutes(app);
   imagesRoutes(app);
+  permissionRoutes(app);
 }
 
 module.exports = registerRoutes;

@@ -4,11 +4,11 @@ const prisma = require("../../lib/prisma");
 const authHandler = require("../../middleware/authHandler");
 const permissionHandler = require("../../middleware/permissionHandler");
 
-async function getUsers(app) {
+async function getPermissions(app) {
   app.withTypeProvider().get(
-    '/users',
+    '/permissions',
     {
-      preHandler: [authHandler, permissionHandler("manageUsers")],
+      preHandler: [authHandler, permissionHandler("managePermissions")],
       schema: {
         querystring: z.object({
           page: z.preprocess((val) => (val ? parseInt(val, 10) : 1), z.number().min(1).default(1)),
@@ -23,45 +23,30 @@ async function getUsers(app) {
       const isPaginated = page && perPage;
 
       if (isPaginated) {
-        const [users, totalUsers] = await Promise.all([
-          prisma.user.findMany({
+        const [permissions, totalPermissions] = await Promise.all([
+          prisma.permission.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
-            orderBy: { username: 'asc' },
-            include: {
-              roles: true,
-              chats: true,
-            }
           }),
           prisma.permission.count(),
         ]);
 
         return reply.status(200).send({
-          users,
-          totalUsers,
+          permissions,
+          totalPermissions,
           currentPage: page,
-          totalPages: Math.ceil(totalUsers / perPage),
+          totalPages: Math.ceil(totalPermissions / perPage),
         });
       }
 
-      const users = await prisma.user.findMany({
-        orderBy: { username: 'asc' },
-        include: {
-          roles: {
-            orderBy: { name: 'asc' },
-          },
-          chats: {
-            orderBy: { name: 'asc' },
-          }
-        }
-      });
+      const permissions = await prisma.permission.findMany();
       
       return reply.status(200).send({
-        users,
-        message: "Users retrieved successfully"
+        permissions,
+        message: "Permissions retrieved successfully"
       });
     },
   )
 }
 
-module.exports = getUsers;
+module.exports = getPermissions;

@@ -16,7 +16,15 @@ async function authHandler(request) {
     const user = await prisma.user.findUnique({
       where: { id },
       include: {
-        roles: true,
+        roles: {
+          include: {
+            permissions: {
+              include: {
+                permission: true
+              }
+            }
+          }
+        },
         chats: {
           include: {
             UserChatActivity: true
@@ -30,21 +38,15 @@ async function authHandler(request) {
     }
 
     const highestRole = user.roles.reduce((max, role) => (role.level > max.level ? role : max), { level: -1 });
-    
-    if (highestRole) {
-      user.permissions = highestRole.permissions;
-    } else {
-      user.permissions = {
-				joinRooms: true,
-				manageRoles: false,
-				manageRooms: false,
-				manageUsers: false,
-				sendMessages: true,
-				editUserProfiles: true,
-        editUserRoles: false,
-        maxChats: 3
-			};
+
+    if (!highestRole) {
+      throw new ForbiddenError("No role with permissions assigned.");
     }
+    
+    user.permissions = highestRole.permissions.reduce((perms, rolePerm) => {
+      perms[rolePerm.permission.name] = rolePerm.value;
+      return perms;
+    }, {});
 
     request.user = user;
   } catch (error) {

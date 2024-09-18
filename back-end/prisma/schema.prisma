@@ -25,16 +25,35 @@ model User {
   @@map("users")
 }
 
-model Role {
-  id          String @id @default(uuid())
-  name        String @unique
-  color       String @unique
-  permissions Json   @default("{}")
-  level       Int    @unique @default(1)
+model Permission {
+  id             String           @id @default(uuid())
+  name           String           @unique
+  type           String
+  description    String?
+  RolePermission RolePermission[]
+}
 
-  users User[] @relation("UserRoles")
+model Role {
+  id    String @id @default(uuid())
+  name  String @unique
+  color String @unique
+  level Int    @unique @default(1)
+
+  permissions RolePermission[]
+  users       User[]           @relation("UserRoles")
 
   @@map("roles")
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  value        Json
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
 }
 
 model Theme {

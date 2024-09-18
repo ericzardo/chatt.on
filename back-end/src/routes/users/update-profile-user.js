@@ -7,7 +7,7 @@ const authHandler = require("../../middleware/authHandler");
 const permissionHandler = require("../../middleware/permissionHandler");
 
 async function updateProfileUser(app) {
-  app.patch(
+  app.withTypeProvider().patch(
     "/users/profile",
     {
       preHandler: [authHandler, permissionHandler("editUserProfiles")],

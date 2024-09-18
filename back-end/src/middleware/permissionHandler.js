@@ -8,8 +8,14 @@ function permissionHandler(requiredPermission) {
       throw new ForbiddenError("Not authenticated.");
     }
 
-    if (!user.permissions[requiredPermission]) {
+    const permissionValue = user.permissions[requiredPermission];
+
+    if (typeof permissionValue === "boolean" && !permissionValue) {
       throw new ForbiddenError(`You do not have permission to ${requiredPermission}.`);
+    }
+
+    if (typeof permissionValue === "number" && permissionValue <= 0) {
+      throw new ForbiddenError(`Your plan does not allow ${requiredPermission}.`);
     }
   };
 }

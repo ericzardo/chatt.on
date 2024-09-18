@@ -1,7 +1,7 @@
 const { z } = require("zod");
 const prisma = require("../../lib/prisma");
 
-const { ClientError } = require("../../errors");
+const { ClientError, NotFoundError, ForbiddenError } = require("../../errors");
 
 const authHandler = require("../../middleware/authHandler");
 const permissionHandler = require("../../middleware/permissionHandler");
