@@ -118,6 +118,22 @@ const isUserReadyToStartWhisper = (user) => {
   return false;
 }
 
+const isUserOnline = (targetUser) => {
+  const allRooms = ConnectionManager.getAllChatRooms();
+  
+  for (const roomName of allRooms) {
+    const onlineUsers = ConnectionManager.getOnlineUsers(roomName);
+
+    const isOnline = onlineUsers.some(onlineUser => onlineUser.id === targetUser.id);
+
+    if (isOnline) {
+      return true; 
+    }
+  }
+
+  return false; 
+};
+
 module.exports = { 
   findChatOrUser,
   findUserByUsername,
@@ -128,5 +144,6 @@ module.exports = {
   sendPrivateMessage,
   sendGroupMessage,
   updateUserChatActivity,
-  isUserReadyToStartWhisper
+  isUserReadyToStartWhisper,
+  isUserOnline
 };

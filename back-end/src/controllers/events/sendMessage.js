@@ -16,6 +16,14 @@ const sendMessage = async (socket, chatName, messageInfos, io) => {
     return;
   }
 
+  if (!user.permissions.sendMessages) {
+    socket.emit("error", {
+      message: "You do not have permission to send messages"
+    })
+
+    return;
+  }
+
   const { chat, targetUser } = await findChatOrUser(chatName);
 
   const message = {

@@ -1,4 +1,4 @@
-const { findChatOrUser } = require("./utils/chatHelper")
+const { findChatOrUser, isUserOnline } = require("./utils/chatHelper")
 
 const startWhisper = async (socket, user) => {
   const { targetUser } = await findChatOrUser(user.username);
@@ -10,6 +10,15 @@ const startWhisper = async (socket, user) => {
 
     return;
   };
+
+  const isOnline = isUserOnline(targetUser);
+
+  if (!isOnline) {
+    socket.emit("error", {
+      message: "It is not possible to talk to a user offline"
+    });
+    return;
+  }
 
   socket.emit("whisperStarted", { targetUser });
 }

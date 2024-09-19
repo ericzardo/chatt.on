@@ -29,6 +29,10 @@ async function addUserChat(app) {
         throw new ForbiddenError("Chat ID is required.")
       }
 
+      if (user.permissions.maxChats <= user.chats.length && user.permissions.maxChats !== 0) {
+        throw new ForbiddenError("You have reached your chat limit.");
+      }
+
       const chat = await prisma.chat.findUnique({
         where: { id: chatId }
       })

@@ -34,6 +34,10 @@ class ConnectionManager {
     return this.connections.get(chatName) || [];
   }
 
+  getAllChatRooms() {
+    return Array.from(this.connections.keys());
+  }
+
   async getOfflineUsers(chatName) {
     const allUsers = await this.getAllUsersInChat(chatName);
     const onlineUsers = this.getOnlineUsers(chatName);
