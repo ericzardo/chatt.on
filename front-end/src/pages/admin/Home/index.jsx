@@ -7,6 +7,7 @@ import UserManager from "../DatabaseManager/UserManager";
 import ThemesManager from "../DatabaseManager/ThemesManager";
 import ChatsManager from "../DatabaseManager/ChatsManager";
 import RolesManager from "../AcessControl/Roles";
+import PermissionsManager from "../AcessControl/Permissions";
 
 function AdminHome () {
   const { user } = useUser();
@@ -39,7 +40,7 @@ function AdminHome () {
             <RolesManager />
           )}
           {mainPage === "access-control" && subPage === "permissions" && (
-            <RolesManager />
+            <PermissionsManager />
           )}
           {mainPage === "management" && subPage === "users" && (
             <UserManager />

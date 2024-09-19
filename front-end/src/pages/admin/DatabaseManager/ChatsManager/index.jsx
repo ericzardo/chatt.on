@@ -21,6 +21,7 @@ import getThemes from "@services/themes/getThemes";
 import getChats from "@services/chats/getChats";
 import createChat from "@services/chats/createChat";
 import deleteChat from "@services/chats/deleteChat";
+import SelectInput from "@components/ui/SelectInput";
 
 function ChatsManager () {
   const { handleNotification } = useNotification();
@@ -196,23 +197,22 @@ function ChatsManager () {
 
   const formFields = [{ name: "name", label: "Name", type: "text", placeholder: "Example: Astronomy" }];
 
+  const themeOptions = themes ? themes.map(theme => ({
+    value: theme.name,
+    placeholder: theme.name
+  })) : [];
+
   return (
     <div className="w-full px-4 py-6">
       <span className="flex justify-between gap-5 items-start sm:items-center user-manager-header">
         <h1 className="font-bold font-alternates md:text-3xl text-xl leading-relaxed text-zinc-900 dark:text-zinc-300">Chats Management</h1>
         <span className="flex sm:flex-row flex-col items-end sm:items-center gap-3 user-manager-header-action">
           {themes && themes.length > 0 && (
-            <select 
-              className="flex items-center gap-3 h-max w-max p-1.5 cursor-pointer font-semibold rounded-lg
-            bg-zinc-300 text-zinc-600 dark:bg-zinc-800 dark:placeholder-zinc-700 dark:text-zinc-500"
-              defaultValue={searchParams.get("theme") ? searchParams.get("theme") : "placeholder"}
+            <SelectInput
+              options={themeOptions}
+              placeholder="Theme"
               onChange={handleThemeSelection}
-            >
-              <option value="placeholder" disabled>Theme</option>
-              {themes.map(theme => (
-                <option key={theme.name} value={theme.name}>{theme.name}</option>
-              ))}
-            </select>
+            />
           )}
           {selectedThemeName && (
             <Button onClick={handleCreateChatModal} size="sm">

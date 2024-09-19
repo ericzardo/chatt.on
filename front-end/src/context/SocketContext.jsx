@@ -48,7 +48,6 @@ export function SocketProvider ({ children }) {
     });
 
     ws.on("error", (error) => {
-      console.log(error);
       handleNotification({
         model: "error",
         message: error.message || "An unexpected error occurred.",

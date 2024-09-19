@@ -51,7 +51,6 @@ async function updateRolesLevels(app) {
       }
 
       const { roles } = request.body;
-      console.log(roles)
 
       if (!Array.isArray(roles)) {
         throw new ClientError("Invalid input format");

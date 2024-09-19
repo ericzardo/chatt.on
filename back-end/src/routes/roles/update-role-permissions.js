@@ -10,21 +10,14 @@ async function updateProfileUser(app) {
   app.patch(
     "/roles/:roleId/permissions",
     {
-      preHandler: [authHandler, permissionHandler("manageRoles")],
+      preHandler: [authHandler, permissionHandler("manageRoles"), permissionHandler("managePermissions")],
       schema: {
         params: z.object({
           roleId: z.string().uuid(),
         }),
-        body: z.object({
-          viewRooms: z.boolean().optional(),
-          joinRooms: z.boolean().optional(),
-          sendMessages: z.boolean().optional(),
-          viewUserProfiles: z.boolean().optional(),
-          editUserProfiles: z.boolean().optional(),
-          manageUsers: z.boolean().optional(),
-          manageRooms: z.boolean().optional(),
-          manageRoles: z.boolean().optional(),
-        }),
+        body: z.record(
+          z.union([z.boolean(), z.number()])
+        ),
       },
     },
     async (request, reply) => {
@@ -37,23 +30,45 @@ async function updateProfileUser(app) {
       const { roleId } = request.params
 
       const role = await prisma.role.findUnique({
-        where: {id: roleId}
+        where: { id: roleId },
+        include: {
+          permissions: true
+        }
       })
 
       if (!role) {
         throw new NotFoundError("Role does not exist.");
       }
 
-      const permissions = request.body;
+      const newPermissions = request.body || {};
 
-      await prisma.role.update({
-        where: { id: roleId },
-        data: {
-          permissions: {
-            ...permissions
+      for (const [permissionName, value] of Object.entries(newPermissions)) {
+        const permission = await prisma.permission.findUnique({
+          where: { name: permissionName },
+        });
+
+        if (!permission) {
+          continue;
+        }
+
+        await prisma.rolePermission.upsert({
+          where: {
+            roleId_permissionId: {
+              roleId,
+              permissionId: permission.id
+            }
           },
-        },
-      });
+          update: {
+            value,
+          },
+          create: {
+            roleId,
+            permissionId: permission.id,
+            value: value,
+          },
+        });
+      }
+
 
       return reply.status(200).send({
         message: "Role permissions updated successfully.",

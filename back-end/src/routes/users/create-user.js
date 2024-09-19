@@ -96,6 +96,8 @@ async function createUser(app) {
       : [...roles, defaultRole.id];
 
       let hashedPassword = "";
+      const profile_picture_url = `${process.env.R2_PUBLIC_ENDPOINT}/avatar-${Math.floor(Math.random() * 9) + 1}`
+
       if (!password && email) {
         const generatePassword = uuidv4();
         hashedPassword = await bcrypt.hash(generatePassword, 10);
@@ -105,6 +107,7 @@ async function createUser(app) {
             username,
             email,
             password: hashedPassword,
+            profile_picture_url,
             roles: {
               connect: userRoles.map((roleId) => ({ id: roleId })),
             },
@@ -127,7 +130,7 @@ async function createUser(app) {
             username,
             email,
             password: hashedPassword,
-            profile_picture_url: `${process.env.R2_PUBLIC_ENDPOINT}/avatar-${Math.floor(Math.random() * 9) + 1}`,
+            profile_picture_url,
             roles: {
               connect: userRoles.map((roleId) => ({ id: roleId })),
             },

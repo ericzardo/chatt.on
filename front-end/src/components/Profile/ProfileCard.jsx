@@ -37,7 +37,7 @@ function ProfileCard ({ handleProfileCard, targetUser }) {
   const isMyProfile = targetUser === user;
 
   const displayedUser = isMyProfile ? user : targetUser;
-  console.log(isMobile);
+
   return (
     <div className="fixed inset-0 z-50 bg-zinc-950/80 flex items-center justify-center">
       <div className="bg-zinc-100 dark:bg-zinc-900 rounded-xl mx-2 md:m-0 p-5 flex flex-col max-w-[640px]">
@@ -56,7 +56,7 @@ function ProfileCard ({ handleProfileCard, targetUser }) {
         <div className={`${isMobile ? "justify-start" : "justify-between"} flex justify-between items-center gap-10 py-4`}>
           <span className={`flex gap-3 ${isMobile ? "flex-col" : "items-center"}`}>
             <img
-              src={user?.profile_picture_url}
+              src={displayedUser?.profile_picture_url}
               alt="User profile picture"
               className="w-28 h-28 relative rounded-full border-2 bg-black border-blue-900"
             />

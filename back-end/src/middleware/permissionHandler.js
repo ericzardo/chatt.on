@@ -14,7 +14,7 @@ function permissionHandler(requiredPermission) {
       throw new ForbiddenError(`You do not have permission to ${requiredPermission}.`);
     }
 
-    if (typeof permissionValue === "number" && permissionValue <= 0) {
+    if (typeof permissionValue === "number" && permissionValue < 0) {
       throw new ForbiddenError(`Your plan does not allow ${requiredPermission}.`);
     }
   };

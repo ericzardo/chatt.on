@@ -106,9 +106,10 @@ const updateUserChatActivity = async (user, chat) => {
 const isUserReadyToStartWhisper = (user) => {
   if (!user) return false;
 
-  const onlineUsers = ConnectionManager.getOnlineUsers(user.username) || [];
-
+  const onlineUsers = ConnectionManager.getOnlineUsers(user.username);
+  
   for (const [roomName, usersList] of Object.entries(onlineUsers)) {
+
     usersList.map(currentUser => {
       if (currentUser.id === user.id ) return true;
     })

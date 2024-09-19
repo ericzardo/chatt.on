@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import PropTypes from "prop-types";
@@ -14,85 +14,53 @@ import ToggleSwitch from "@components/ui/ToggleSwitch";
 import Button from "@components/ui/Button";
 
 import updateRolePermissions from "@services/roles/updateRolePermissions";
+import getRolePermissions from "@services/roles/getRolePermissions";
 
 EditPermissions.propTypes = {
   role: PropTypes.object.isRequired,
   handleEditRolePermissions: PropTypes.func.isRequired,
 };
 
-const permissionsList = [
-  {
-    name: "viewRooms",
-    label: "View Rooms",
-    description: "Allows users to view the list of available channels.",
-    type: "boolean"
-  },
-  {
-    name: "joinRooms",
-    label: "Join Room",
-    description: "Allows users to join or leave channels.",
-    type: "boolean"
-  },
-  {
-    name: "sendMessages",
-    label: "Send Messages",
-    description: "Allows users to send messages in channels or direct messages.",
-    type: "boolean"
-  },
-  {
-    name: "viewUserProfiles",
-    label: "View User Profiles",
-    description: "Allows users to view the profiles of other users.",
-    type: "boolean"
-  },
-  {
-    name: "editUserProfiles",
-    label: "Edit User Profiles",
-    description: "Allows users to edit their own profiles.",
-    type: "boolean"
-  },
-  {
-    name: "manageUsers",
-    label: "Manage Users",
-    description: "Allows users to create, edit, or delete users",
-    type: "boolean"
-  },
-  {
-    name: "manageRooms",
-    label: "Manage Rooms",
-    description: "Allows users to create, edit, or delete themes and chats.",
-    type: "boolean"
-  },
-  {
-    name: "manageRoles",
-    label: "Manage Roles",
-    description: "Allows users to create, edit, or delete roles and permissions.",
-    type: "boolean"
-  },
-];
-
 function EditPermissions ({ role, handleEditRolePermissions }) {
   const { handleNotification } = useNotification();
 
   const [ isLoadingOnSaving, setIsLoadingOnSaving ] = useState(false);
 
-  const generateFormConfig = useCallback((permissionsList, rolePermissions) => {
+  const { data: rolePermissions } = useQuery({
+    queryKey: ["get-role-permissions", role.id],
+    queryFn: () => getRolePermissions(role),
+    onError: (error) => {
+      handleNotification({
+        model: "error",
+        message: error.message || "An unexpected error occurred."
+      });
+    },
+  });
+
+  const generateFormConfig = useCallback((permissions) => {
     const schemaShape = {};
     const defaultValues = {};
-  
-    permissionsList.forEach(permission => {
-      schemaShape[permission.name] = z.boolean();
-      
-      defaultValues[permission.name] = rolePermissions[permission.name] ?? false;
+
+    permissions.forEach(permission => {
+      if (permission.type === "boolean") {
+        schemaShape[permission.name] = z.boolean();
+        defaultValues[permission.name] = permission.value ?? false;
+      } else if (permission.type === "number") {
+        schemaShape[permission.name] = z.number().min(0);
+        defaultValues[permission.name] = permission.value ?? 0;
+      }
     });
-  
+
     return {
       schema: zodResolver(z.object(schemaShape)),
       defaultValues
     };
   }, []);
 
-  const { schema, defaultValues } = useMemo(() => generateFormConfig(permissionsList, role?.permissions || {}), [role?.permissions, generateFormConfig]);
+  const { schema, defaultValues } = useMemo(
+    () => generateFormConfig(rolePermissions || []),
+    [rolePermissions, generateFormConfig]
+  );
 
   const { control, handleSubmit } = useForm({
     resolver: schema,
@@ -134,18 +102,45 @@ function EditPermissions ({ role, handleEditRolePermissions }) {
           {`Edit Permissions - ${role.name}`}
         </p>
         <form onSubmit={handleSubmit(editRolePermissions)} className="flex flex-col gap-4">
-          {permissionsList.map(permission => (
+          {rolePermissions && rolePermissions?.map((permission) => (
             <Controller
               key={permission.name}
               name={permission.name}
               control={control}
               render={({ field: { onChange, value } }) => (
-                <LabeledToggleSwitch labelText={permission.label} name={permission.name} description={permission.description} >
-                  <ToggleSwitch
-                    checked={value}
-                    onChange={e => onChange(e.target.checked)}
-                  />
-                </LabeledToggleSwitch>
+                <>
+                  {permission.type === "boolean" ? (
+                    <LabeledToggleSwitch
+                      labelText={permission.name}
+                      name={permission.name}
+                      description={permission.description}
+                    >
+                      <ToggleSwitch
+                        checked={value}
+                        onChange={(e) => onChange(e.target.checked)}
+                      />
+                    </LabeledToggleSwitch>
+                  ) : (
+                    <div className="flex flex-col gap-2 w-full">
+                      <label
+                        htmlFor={permission.name}
+                        className="flex items-center justify-between gap-2"
+                      >
+                        <p className="text-zinc-700 dark:text-zinc-300 font-semibold">
+                          {permission.name}
+                        </p>
+                        <input
+                          type="number"
+                          value={value}
+                          onChange={(e) => onChange(Number(e.target.value))}
+                          className="dark:bg-zinc-800 dark:text-zinc-400 bg-zinc-200 text-zinc-700 px-2 py-1 w-16 rounded-md"
+                          min={0}
+                        />
+                      </label>
+                      <p className="text-sm font-normal leading-5 dark:text-zinc-500 text-zinc-500">{permission.description}</p>
+                    </div>
+                  )}
+                </>
               )}
             />
           ))}

@@ -5,6 +5,7 @@ import { Loader } from "react-feather";
 import LabeledInput from "@components/ui/LabeledInput";
 import Input from "@components/ui/Input";
 import Button from "@components/ui/Button";
+import SelectInput from "@components/ui/SelectInput";
 
 GenerateForm.propTypes = {
   isLoading: PropTypes.bool,
@@ -34,7 +35,7 @@ function GenerateForm ({ onSubmit, onClose, fields, isLoading = false, submitLab
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
       {fields && fields.length > 0 &&
-       fields?.map(({ name, label, type, placeholder }) => (
+       fields?.map(({ name, label, type, placeholder, options  }) => (
          <Controller
            key={name}
            name={name}
@@ -46,6 +47,12 @@ function GenerateForm ({ onSubmit, onClose, fields, isLoading = false, submitLab
                    type="color"
                    size="sm"
                    {...field}
+                 />
+               ) : type === "select" ? (
+                 <SelectInput
+                   {...field}
+                   options={options}
+                   placeholder={placeholder}
                  />
                ) : (
                  <Input type={type} placeholder={placeholder} {...field} />

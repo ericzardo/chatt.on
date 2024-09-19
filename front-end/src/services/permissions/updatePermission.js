@@ -1,13 +1,12 @@
 import api from "src/lib/axios";
 
-const updateRolePermissions = async (role, data) => {
-  console.log(role);
-  console.log(data);
+const updatePermission = async (permission, data) => {
+
   try {
-    const response = await api.patch(`/roles/${role.id}/permissions`, { ...data });
+    const response = await api.patch(`/permissions/${permission.id}`, { ...data });
 
     if (!response.data) {
-      throw new Error("Error updating role permissions. Please try again.");
+      throw new Error("Error saving changes on permission. Please try again.");
     }
 
     return response.data;
@@ -21,4 +20,4 @@ const updateRolePermissions = async (role, data) => {
   }
 };
 
-export default updateRolePermissions;
+export default updatePermission;

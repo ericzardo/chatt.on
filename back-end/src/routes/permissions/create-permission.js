@@ -14,14 +14,13 @@ async function createPermission(app) {
       schema: {
         body: z.object({
           name: z.string().min(4),
-          type: z.string().optional().default("boolean"),
+          type: z.enum(["boolean", "number"]).optional().default("boolean"),
           description: z.string().optional().default(""),
-          defaultValue: z.union([z.boolean(), z.number()]).optional().default(true),
         }),
       },
     },
     async (request, reply) => {
-      const { name, type, description, defaultValue } = request.body;
+      const { name, type, description } = request.body;
 
       const existingPermission = await prisma.permission.findUnique({
         where: { name },
@@ -47,7 +46,7 @@ async function createPermission(app) {
             data: {
               roleId: role.id,
               permissionId: permission.id,
-              value: defaultValue,
+              value: type === "boolean" ? false : 0,
             },
           });
         })
