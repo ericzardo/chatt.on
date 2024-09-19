@@ -148,7 +148,13 @@ function HamburguerMenu ({ toggleHamburguerMenuOpen, links = linksPropDefault })
       
       </div>
       {isMyAccountModalOpen && (
-        <ProfileCard handleProfileCard={handleProfileCard} targetUser={user} />
+        <ProfileCard 
+          handleProfileCard={handleProfileCard}
+          targetUser={user}
+          isOpen={isMyAccountModalOpen}
+          onClose={handleProfileCard}
+          withOverlay={true}
+        />
       )}
     </aside>
   );

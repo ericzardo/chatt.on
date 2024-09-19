@@ -6,6 +6,7 @@ import UsernameAndAvatarModalRoot from "./Root";
 import UsernameAndAvatarModalTitle from "./Title";
 import UsernameAndAvatarModalAvatarSelection from "./AvatarSelection";
 import UsernameAndAvatarModalUsernameForm from "./UsernameForm";
+import withClickOutside from "@components/hoc/withClickOutside";
 
 UsernameAndAvatarModal.propTypes = {
   chat: PropTypes.object.isRequired,
@@ -43,4 +44,6 @@ function UsernameAndAvatarModal ({ chat, onClose }) {
 
 }
 
-export default UsernameAndAvatarModal;
+const UsernameAndAvatarModalWithHandled = withClickOutside(UsernameAndAvatarModal);
+
+export default UsernameAndAvatarModalWithHandled;

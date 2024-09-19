@@ -57,7 +57,12 @@ function AuthProtection ({ children }) {
   
   if (shouldShowUsernameModal) {
     return (
-      <UsernameAndAvatarModal chat={chatSelected} onClose={closeGuestUserModal} />
+      <UsernameAndAvatarModal
+        chat={chatSelected} 
+        onClose={closeGuestUserModal}
+        isOpen={shouldShowUsernameModal}
+        withOverlay={true}
+      />
     );
   }
 

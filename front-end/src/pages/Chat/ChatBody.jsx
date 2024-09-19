@@ -9,6 +9,7 @@ import Input from "@components/ui/Input";
 import MessageSkeleton from "@components/skeleton/MessageSkeleton";
 import ChatHeader from "./ChatHeader";
 import ProfileCard from "@components/Profile/ProfileCard";
+import TargetUserOptions from "@components/TargetUserOptions";
 
 ChatBody.propTypes = {
   isLoading: PropTypes.bool,
@@ -140,24 +141,14 @@ function ChatBody ({ isLoading = false, isMobile = false, handleChatSidebarOpen,
                     {message}
                   </p>
                 </div>
-                {isUserModalOpen && selectedUser === user && (
-                  <ul className="flex flex-col absolute z-10 top-full left-0 rounded-md shadow-sm overflow-hidden dark:bg-zinc-800 bg-zinc-300">
-                    <li 
-                      className="p-2 cursor-pointer text-sm font-alternates font-semibold uppercase hover:dark:bg-zinc-700 hover:bg-zinc-400/20
-                      text-zinc-700 dark:text-zinc-400 hover:text-zinc-800 hover:dark:text-zinc-300"
-                      onClick={() => handleWhisperStart(user)}
-                    >
-                      Talk with
-                    </li>
-                    <li 
-                      className="p-2 cursor-pointer text-sm font-alternates font-semibold uppercase hover:dark:bg-zinc-700 hover:bg-zinc-400/20
-                      text-zinc-700 dark:text-zinc-400 hover:text-zinc-800 hover:dark:text-zinc-300"
-                      onClick={handleProfileCard}
-                    >
-                      See Profile
-                    </li>
-                  </ul>
-                )}
+                <TargetUserOptions
+                  user={user}
+                  onWhisperStart={handleWhisperStart}
+                  onProfileClick={handleProfileCard}
+                  closeModal={() => setIsUserModalOpen(false)}
+                  isOpen={isUserModalOpen && selectedUser === user}
+                  onClose={() => setIsUserModalOpen(false)}
+                />
               </div>
             );
           })
@@ -190,7 +181,13 @@ function ChatBody ({ isLoading = false, isMobile = false, handleChatSidebarOpen,
       </div>
       
       {isProfileModalOpen && (
-        <ProfileCard handleProfileCard={handleProfileCard} targetUser={selectedUser} />
+        <ProfileCard
+          handleProfileCard={handleProfileCard}
+          targetUser={selectedUser}
+          isOpen={isProfileModalOpen}
+          onClose={handleProfileCard}
+          withOverlay={true}
+        />
       )}
     </div>
   );

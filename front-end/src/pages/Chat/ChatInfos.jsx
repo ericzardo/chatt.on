@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
+import useUser from "@hooks/useUser";
+import useSocket from "@hooks/useSocket";
 
 import { X } from "react-feather";
 import ProfileCard from "@components/Profile/ProfileCard";
 import ListItemSkeleton from "@components/skeleton/ListItemSkeleton";
-import useUser from "@hooks/useUser";
-import useSocket from "@hooks/useSocket";
+import TargetUserOptions from "@components/TargetUserOptions";
 
 ChatInfos.propTypes = {
   isLoading: PropTypes.bool,
@@ -46,7 +47,7 @@ function ChatInfos ({ isLoading = false, isMobile = false, isChatInfosOpen, hand
   const handleUserModal = useCallback((targetUser) => {
     if (targetUser.id === user.id) return;
 
-    setSelectedUser(prev => !prev);
+    setSelectedUser(targetUser);
     setIsUserModalOpen(prev => !prev);
   }, [user]);
 
@@ -89,24 +90,14 @@ function ChatInfos ({ isLoading = false, isMobile = false, isChatInfosOpen, hand
                 <p className="font-alternates font-semibold text-lg leading-relaxed text-zinc-500 dark:text-zinc-400">
                   {user.username}
                 </p>
-                {isUserModalOpen && selectedUser === user && (
-                  <ul className="flex flex-col absolute z-10 top-full left-0 rounded-md shadow-sm overflow-hidden dark:bg-zinc-800 bg-zinc-300">
-                    <li 
-                      className="p-2 cursor-pointer text-sm font-alternates font-semibold uppercase hover:dark:bg-zinc-700 hover:bg-zinc-400/20
-                      text-zinc-700 dark:text-zinc-400 hover:text-zinc-800 hover:dark:text-zinc-300"
-                      onClick={() => handleWhisperStart(user)}
-                    >
-                      Talk with
-                    </li>
-                    <li 
-                      className="p-2 cursor-pointer text-sm font-alternates font-semibold uppercase hover:dark:bg-zinc-700 hover:bg-zinc-400/20
-                      text-zinc-700 dark:text-zinc-400 hover:text-zinc-800 hover:dark:text-zinc-300"
-                      onClick={handleProfileCard}
-                    >
-                      See Profile
-                    </li>
-                  </ul>
-                )}
+                <TargetUserOptions
+                  user={user}
+                  onWhisperStart={handleWhisperStart}
+                  onProfileClick={() => handleProfileCard(user)}
+                  closeModal={() => setIsUserModalOpen(false)}
+                  isOpen={isUserModalOpen && selectedUser === user}
+                  onClose={() => setIsUserModalOpen(false)}
+                />
               </li>
             ))
           )}
@@ -147,7 +138,13 @@ function ChatInfos ({ isLoading = false, isMobile = false, isChatInfosOpen, hand
       </span>
 
       {isProfileModalOpen && (
-        <ProfileCard handleProfileCard={handleProfileCard} targetUser={selectedUser} />
+        <ProfileCard
+          handleProfileCard={handleProfileCard}
+          targetUser={selectedUser}
+          isOpen={isProfileModalOpen}
+          onClose={handleProfileCard}
+          withOverlay={true}
+        />
       )}
 
     </aside>

@@ -179,7 +179,12 @@ function ThemesManager () {
       </div>
 
       {isCreateThemeModalOpen && (
-        <CreateModal title="Create new Theme">
+        <CreateModal
+          title="Create new Theme"
+          isOpen={isCreateThemeModalOpen}
+          onClose={handleCreateThemeModal}
+          withOverlay={true}
+        >
           <GenerateForm
             useForm={formManager}
             fields={formFields} 
@@ -191,7 +196,14 @@ function ThemesManager () {
         </CreateModal>
       )}
       {isToConfirmAction && (
-        <ConfirmDeleteModal item={themeSelected} handleConfirmDeleteModal={handleConfirmDeleteModal} onConfirm={confirmDeleteTheme} />
+        <ConfirmDeleteModal
+          item={themeSelected}
+          handleConfirmDeleteModal={handleConfirmDeleteModal}
+          onConfirm={confirmDeleteTheme}
+          isOpen={isToConfirmAction}
+          onClose={handleConfirmDeleteModal}
+          withOverlay={true}
+        />
       )}
     </div>
   );

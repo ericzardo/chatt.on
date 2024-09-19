@@ -151,7 +151,12 @@ function UserManager () {
       </div>
 
       {isCreateUserModalOpen && (
-        <CreateUserModal handleCreateUserModal={handleCreateUserModal} />
+        <CreateUserModal
+          handleCreateUserModal={handleCreateUserModal}
+          onClose={handleCreateUserModal}
+          isOpen={isCreateUserModalOpen}
+          withOverlay={true}
+        />
       )}
 
       {isToConfirmAction && (
@@ -159,6 +164,9 @@ function UserManager () {
           item={userSelected}
           handleConfirmDeleteModal={handleConfirmDeleteModal}
           onConfirm={confirmDeleteUser}
+          isOpen={isToConfirmAction}
+          onClose={handleConfirmDeleteModal}
+          withOverlay={true}
         />
       )}
 
@@ -166,6 +174,9 @@ function UserManager () {
         <EditUserRolesModal
           user={userSelected}
           handleEditRolesModal={handleEditRolesModal}
+          isOpen={isEditRolesModalOpen}
+          onClose={handleEditRolesModal}
+          withOverlay={true}
         />
       )}
     </div>

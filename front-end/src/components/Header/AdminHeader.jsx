@@ -30,7 +30,10 @@ function AdminHeader () {
         />
 
         {isUserDropdownVisible && (
-          <UserDropdown />
+          <UserDropdown
+            isOpen={isUserDropdownVisible}
+            onClose={handleUserDropdown}
+          />
         )}
       </div>
 

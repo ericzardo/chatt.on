@@ -11,6 +11,7 @@ import queryClient from "@lib/queryClient";
 import LabeledInput from "@components/ui/LabeledInput";
 import Button from "@components/ui/Button";
 import RoleCard from "@components/RoleCard";
+import withClickOutside from "@components/hoc/withClickOutside";
 
 import ContainerModal from "@components/modals/ContainerModal";
 import GenerateForm from "@components/utils/GenerateForm";
@@ -151,7 +152,12 @@ function CreateUserModal ({ handleCreateUserModal }) {
   ) || [];
 
   return (
-    <ContainerModal title="Add new User">
+    <ContainerModal
+      title="Add new User"
+      isOpen={true}
+      onClose={handleCreateUserModal}
+      withOverlay={true}
+    >
       <GenerateForm
         fields={formFields}
         useForm={formManager}
@@ -206,4 +212,6 @@ function CreateUserModal ({ handleCreateUserModal }) {
   );
 }
 
-export default CreateUserModal;
+const CreateUserModalWithHandled = withClickOutside(CreateUserModal);
+
+export default CreateUserModalWithHandled;

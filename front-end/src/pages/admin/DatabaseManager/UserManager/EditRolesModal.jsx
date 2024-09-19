@@ -9,6 +9,7 @@ import queryClient from "@lib/queryClient";
 import LabeledInput from "@components/ui/LabeledInput";
 import Button from "@components/ui/Button";
 import RoleCard from "@components/RoleCard";
+import withClickOutside from "@components/hoc/withClickOutside";
 
 import ContainerModal from "@components/modals/ContainerModal";
 import GenerateForm from "@components/utils/GenerateForm";
@@ -114,7 +115,12 @@ function EditRolesModal ({ user, handleEditRolesModal }) {
   ) || [];
 
   return (
-    <ContainerModal title="Edit Roles">
+    <ContainerModal
+      title="Edit Roles"
+      isOpen={true}
+      onClose={handleEditRolesModal}
+      withOverlay={true}
+    >
       <GenerateForm
         fields={[]}
         useForm={formManager}
@@ -170,4 +176,6 @@ function EditRolesModal ({ user, handleEditRolesModal }) {
   );
 }
 
-export default EditRolesModal;
+const EditRolesModalWithHandled = withClickOutside(EditRolesModal);
+
+export default EditRolesModalWithHandled;

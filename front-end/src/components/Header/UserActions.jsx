@@ -41,7 +41,10 @@ function HeaderUserActions () {
           />
 
           {isUserDropdownVisible && (
-            <UserDropdown />
+            <UserDropdown
+              isOpen={isUserDropdownVisible}
+              onClose={handleUserDropdownVisible}
+            />
           )}
 
         </span>

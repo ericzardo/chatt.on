@@ -1,8 +1,6 @@
 import api from "src/lib/axios";
 
 const updateRolePermissions = async (role, data) => {
-  console.log(role);
-  console.log(data);
   try {
     const response = await api.patch(`/roles/${role.id}/permissions`, { ...data });
 

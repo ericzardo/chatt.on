@@ -191,7 +191,14 @@ function PermissionsManager () {
         </CreateModal>
       )}
       {isToConfirmAction && (
-        <ConfirmDeleteModal item={permissionSelected} handleConfirmDeleteModal={handleConfirmDeleteModal} onConfirm={confirmDeletePermission} />
+        <ConfirmDeleteModal
+          item={permissionSelected}
+          handleConfirmDeleteModal={handleConfirmDeleteModal}
+          onConfirm={confirmDeletePermission}
+          onClose={handleConfirmDeleteModal}
+          isOpen={isToConfirmAction}
+          withOverlay={true}
+        />
       )}
 
     </div>

@@ -44,18 +44,26 @@ function GenerateForm ({ onSubmit, onClose, fields, isLoading = false, submitLab
              <LabeledInput name={name} labelText={label}>
                {type === "color" ? (
                  <Input
+                   {...field}
                    type="color"
                    size="sm"
-                   {...field}
+                   aria-label={`Change ${label.toLowerCase()}`}
                  />
                ) : type === "select" ? (
                  <SelectInput
                    {...field}
                    options={options}
                    placeholder={placeholder}
+                   aria-label={`Select ${label.toLowerCase()}`}
                  />
                ) : (
-                 <Input type={type} placeholder={placeholder} {...field} />
+                 <Input
+                   {...field}
+                   type={type}
+                   placeholder={placeholder}
+                   size="sm"
+                   aria-label={`Enter ${label.toLowerCase()}`}
+                 />
                )}
                {errors[name] && <p className="text-red-500 text-sm">{errors[name]?.message}</p>}
              </LabeledInput>

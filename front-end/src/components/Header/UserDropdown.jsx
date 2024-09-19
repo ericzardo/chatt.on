@@ -4,6 +4,7 @@ import useUser from "@hooks/useUser";
 
 import { LogOut, User, Sun, Moon } from "react-feather";
 import ProfileCard from "@components/Profile/ProfileCard";
+import withClickOutside from "@components/hoc/withClickOutside";
 
 import { toggleTheme } from "@utils/toggleTheme";
 
@@ -77,10 +78,14 @@ function UserDropdown () {
         <ProfileCard
           handleProfileCard={handleProfileCard}
           targetUser={user}
+          isOpen={isMyAccountModalOpen}
+          onClose={handleProfileCard}
+          withOverlay={true}
         />
       )}
     </div>
   );
 }
+const UserDropdownWithHandled = withClickOutside(UserDropdown);
 
-export default UserDropdown;
+export default UserDropdownWithHandled;

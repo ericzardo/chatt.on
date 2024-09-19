@@ -60,7 +60,12 @@ function Home () {
       )}
 
       {isGuestJoiningInChatRoom && (
-        <UsernameAndAvatarModal chat={chat} onClose={handleSelectChat} />
+        <UsernameAndAvatarModal
+          chat={chat}
+          onClose={handleSelectChat}
+          isOpen={isGuestJoiningInChatRoom}
+          withOverlay={true}
+        />
       )}
       
     </div>

@@ -52,8 +52,6 @@ function ThemeSelection ({ handleSelectTheme }) {
         ))}
       </ul>
 
-      
-
     </span>
   );
 }

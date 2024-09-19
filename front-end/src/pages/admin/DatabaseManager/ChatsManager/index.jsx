@@ -238,7 +238,12 @@ function ChatsManager () {
       </div>
 
       {isCreateChatModalOpen && (
-        <CreateModal title="Create new Room" >
+        <CreateModal
+          title="Create new Room" 
+          isOpen={isCreateChatModalOpen}
+          onClose={handleCreateChatModal}
+          withOverlay={true}
+        >
           <GenerateForm
             fields={formFields}
             useForm={formManager}
@@ -250,7 +255,14 @@ function ChatsManager () {
       )}
 
       {isToConfirmAction && (
-        <ConfirmDeleteModal item={chatSelected} handleConfirmDeleteModal={handleConfirmDeleteModal} onConfirm={confirmDeleteChat} />
+        <ConfirmDeleteModal
+          item={chatSelected}
+          handleConfirmDeleteModal={handleConfirmDeleteModal}
+          onConfirm={confirmDeleteChat}
+          isOpen={isToConfirmAction}
+          onClose={handleConfirmDeleteModal}
+          withOverlay={true}
+        />
       )}
 
 

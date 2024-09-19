@@ -244,7 +244,12 @@ function RolesManager () {
       </div>
 
       {isCreateRoleModalOpen && (
-        <CreateModal title="Create new Role">
+        <CreateModal
+          title="Create new Role"
+          isOpen={isCreateRoleModalOpen}
+          onClose={handleCreateRoleModal}
+          withOverlay={true}
+        >
           <GenerateForm
             useForm={formManager}
             fields={formFields} 
@@ -255,15 +260,34 @@ function RolesManager () {
         </CreateModal>
       )}
       {isToConfirmAction && (
-        <ConfirmDeleteModal item={roleSelected} handleConfirmDeleteModal={handleConfirmDeleteModal} onConfirm={confirmDeleteRole} />
+        <ConfirmDeleteModal 
+          item={roleSelected}
+          handleConfirmDeleteModal={handleConfirmDeleteModal}
+          onConfirm={confirmDeleteRole}
+          isOpen={isToConfirmAction}
+          onClose={handleConfirmDeleteModal}
+          withOverlay={true}
+        />
       )}
 
       {isEditRoleOpen && (
-        <EditRoleModal role={roleSelected} handleEditRole={handleEditRole} />
+        <EditRoleModal
+          role={roleSelected}
+          handleEditRole={handleEditRole}
+          isOpen={isEditRoleOpen}
+          onClose={handleEditRole}
+          withOverlay={true}
+        />
       )}
 
       {isEditRolePermissionsOpen && (
-        <EditPermissions role={roleSelected} handleEditRolePermissions={handleEditRolePermissions} />
+        <EditPermissions
+          role={roleSelected}
+          handleEditRolePermissions={handleEditRolePermissions}
+          isOpen={isEditRolePermissionsOpen}
+          onClose={handleEditRolePermissions}
+          withOverlay={true}
+        />
       )}
     </div>
   );
