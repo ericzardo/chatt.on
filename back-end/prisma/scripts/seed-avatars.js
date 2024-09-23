@@ -19,7 +19,7 @@ async function main() {
       Bucket: process.env.R2_BUCKET_NAME,
       Key: `avatar-${i}`,
       Body: fileStream,
-      ContentType: 'image/jpg',
+      ContentType: 'image/webp',
     });
 
     i++;
