@@ -62,7 +62,7 @@ Before starting the back-end, you need to configure environment variables.
 
   2. **Add the following configuration to the *.env* file:**
 
-  Open the .env file in a text editor and add the following content:
+  Open the `.env` file in a text editor and add the following content:
 
   ```env
   # Environment mode
@@ -110,6 +110,7 @@ Before starting the back-end, you need to configure environment variables.
   ```
 #### Configuration Notes
 
-- **Environment Variables:** The .env file is crucial for configuring different parts of your application. Ensure that values such as PORT, BASE_URL, and DATABASE_URL match between the front-end and back-end to ensure proper communication.
-- **Port Matching:** If you change the port in the back-end (PORT), make sure to update the BASE_URL in the front-end configuration if needed.
+- **Environment Variables:** The `.env` file is crucial for configuring different parts of your application. Ensure that values such as `PORT`, `BASE_URL`, and `DATABASE_URL` match between the front-end and back-end to ensure proper communication.
+- **Port Matching:** If you change the port in the back-end (`PORT`), make sure to update the `BASE_URL` in the front-end configuration if needed.
 - **SMTP Configuration:** For email functionality, configure SMTP settings according to your email service provider. For Gmail, you may need to generate an app-specific password.
+- **Cloudflare R2 Configuration:** Ensure the `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_ACCOUNT_ID`, `R2_ENDPOINT`, and `R2_PUBLIC_ENDPOINT` are properly configured in the .env file. These values are critical for managing file storage and uploads within the application. Make sure your access keys are secure and not shared publicly.
