@@ -87,9 +87,19 @@ Before starting the back-end, you need to configure environment variables.
   SMTP_SECURE=false
   SMTP_USER="your_email@gmail.com"
   SMTP_PASS="your_app_password_here"
+
+  # Cloudflare R2 configuration
+  R2_ACCESS_KEY_ID="your_r2_access_key_id_here"
+  R2_SECRET_ACCESS_KEY="your_r2_secret_access_key_here"
+  R2_BUCKET_NAME="your_r2_bucket_name_here"
+  R2_ACCOUNT_ID="your_r2_account_id_here"
+  R2_ENDPOINT="your_r2_endpoint_here"
+  R2_PUBLIC_ENDPOINT="your_r2_public_endpoint_here"
   ```
 
-  **Note**: Replace placeholder values with your own configuration. For example, generate an app password for Gmail if using Gmail SMTP.
+  **Note**: 
+  + Replace placeholder values with your own configuration. For example, generate an app password for Gmail if using Gmail SMTP.
+  + For Cloudflare R2, make sure to add your own R2 configuration from your Cloudflare account
 
   3. **Install dependencies, run migrations, and start the server:**
 
