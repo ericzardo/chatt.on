@@ -1,11 +1,21 @@
 import axios from "axios";
 
-const baseURL = "http://localhost:1337";
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+
+console.log("Base URL configurada:", baseURL);
 
 const api = axios.create({
   baseURL,
-  withCredentials: true,
-  headers: { "Access-Control-Allow-Origin": "*" }
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
 });
 
 api.interceptors.response.use(
