@@ -14,8 +14,8 @@
   },
   "version": "1.0.0",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "pm2 start src/server.js --name chatt.on-backend --env production",
+    "dev": "npx pm2 start ecosystem.config.js --env development",
+    "start": "pm2 start ecosystem.config.js --env production",
     "seed:permissions": "node prisma/scripts/seed-permissions.js",
     "seed:roles": "node prisma/scripts/seed-roles.js",
     "seed:admin": "node prisma/scripts/seed-admin.js",
@@ -34,6 +34,7 @@
     "fastify-type-provider-zod": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.14",
+    "pm2": "^5.4.2",
     "react-hook-form": "^7.52.2",
     "socket.io": "^4.7.5",
     "uuid": "^10.0.0",

@@ -2,6 +2,7 @@
 /back-end/.env.production
 /front-end/.env.development
 /front-end/.env.production
+/back-end/ecosystem.config.js
 node_modules/
 
 dist/
