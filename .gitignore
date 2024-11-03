@@ -1,4 +1,7 @@
 /back-end/.env
+/back-end/.env.production
+/front-end/.env.development
+/front-end/.env.production
 node_modules/
 
 dist/
@@ -25,3 +28,4 @@ prisma/migration_lock.toml
 *.pem
 *.cert
 
+!.env.example
