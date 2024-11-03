@@ -19,7 +19,7 @@ async function AuthLogin(app) {
     },
     async (request, reply) => {
       const { email, password } = request.body;
-      
+
       const user = await prisma.user.findUnique({
         where: { email },
       })
@@ -39,12 +39,6 @@ async function AuthLogin(app) {
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
       );
-
-      reply.setCookie('access-token', accessToken, { 
-        maxAge: 3600000,
-        path: "/"
-      });
-    
 
       return reply.status(200).send({
         accessToken,

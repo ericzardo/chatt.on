@@ -5,11 +5,13 @@ const { ForbiddenError, NotFoundError, ClientError } = require("../errors");
 async function authHandler(request) {
 
   try {
-    const token = request.cookies["access-token"];
+    const authHeader = request.headers['authorization'];
 
-    if (!token) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new ForbiddenError("Not authenticated.");
     }
+
+    const token = authHeader.split(' ')[1];
 
     const { id } = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -29,7 +31,7 @@ async function authHandler(request) {
           include: {
             UserChatActivity: true
           }
-        } 
+        }
       }
     })
 
@@ -42,7 +44,7 @@ async function authHandler(request) {
     if (!highestRole) {
       throw new ForbiddenError("No role with permissions assigned.");
     }
-    
+
     user.permissions = highestRole.permissions.reduce((perms, rolePerm) => {
       perms[rolePerm.permission.name] = rolePerm.value;
       return perms;

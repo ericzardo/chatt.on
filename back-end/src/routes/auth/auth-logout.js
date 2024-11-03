@@ -20,13 +20,9 @@ async function AuthLogout(app) {
         });
       }
 
-      reply.clearCookie('access-token', {
-        path: '/',
-      });
-
       return reply.status(200).send({
         message: "Logout successful",
-      });  
+      });
     }
   );
 }
