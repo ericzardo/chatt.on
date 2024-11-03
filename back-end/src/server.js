@@ -35,7 +35,7 @@ const runApp = async () => {
 
   configureFastify(app);
 
-  await app.listen({ port: process.env.PORT })
+  await app.listen({ host: '0.0.0.0', port: process.env.PORT })
     .then(() => {
       console.log(`Server running on http://localhost:${process.env.PORT}`);
 
