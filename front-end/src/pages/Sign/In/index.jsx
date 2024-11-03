@@ -53,7 +53,8 @@ function SignIn () {
         });
         return;
       }
-      revalidateUser();
+      localStorage.setItem("token", response.accessToken);
+      await revalidateUser();
       navigate("/");
 
     } catch (error) {
