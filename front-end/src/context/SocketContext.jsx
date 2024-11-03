@@ -27,8 +27,7 @@ export function SocketProvider ({ children }) {
 
   useEffect(() => {
     if (!user || !chatName) return;
-
-    const ws = io("http://localhost:1337/chat", {
+    const ws = io(`${import.meta.env.VITE_API_BASE_URL}/chat`, {
       withCredentials: true,
       extraHeaders: {
         "Authorization": `Bearer ${localStorage.getItem("token")}`
