@@ -22,10 +22,12 @@ function UserDropdown () {
   const handleLogout = useCallback(async () => {
     try {
       const response = await authLogout();
-      if (response) {
-        await revalidateUser();
-        navigate("/sign-in");
-      }
+      if (!response) return;
+
+      localStorage.removeItem("token");
+      await revalidateUser();
+      navigate("/sign-in");
+      
     } catch (error) {
       console.error("Logout failed:", error);
     }
