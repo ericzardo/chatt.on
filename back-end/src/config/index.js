@@ -1,38 +1,20 @@
 const config = {
   development: {
     corsConfig: {
-      origin: [ process.env.DEVELOPMENT_BASE_URL ], 
-      credentials: true,
-    },
-    cookieConfig: {
-      secret: process.env.JWT_SECRET,
-      hook: "onRequest",
-      parseOptions: {
-        httpOnly: true,
-        secure: false,
-        sameSite: "Strict"
-      }
+      origin: process.env.BASE_URL,
+      allowedHeaders: ['Authorization', 'Content-Type'],
     },
     socketConfig: {
       cors: {
-        origin: process.env.DEVELOPMENT_BASE_URL,
+        origin: process.env.BASE_URL,
         credentials: true,
       }
     }
   },
   production: {
     corsConfig: {
-      origin: [ process.env.BASE_URL ],
-      credentials: true,
-    },
-    cookieConfig: {
-      secret: process.env.JWT_SECRET,
-      hook: "onRequest",
-      parseOptions: {
-        httpOnly: true,
-        secure: true,
-        sameSite: "Strict"
-      }
+      origin: process.env.BASE_URL,
+      allowedHeaders: ['Authorization', 'Content-Type'],
     },
     socketConfig: {
       cors: {
