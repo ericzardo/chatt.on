@@ -30,6 +30,9 @@ export function SocketProvider ({ children }) {
 
     const ws = io("http://localhost:1337/chat", {
       withCredentials: true,
+      extraHeaders: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      }
     });
 
     const isWhisperChat = chatName.startsWith("@");

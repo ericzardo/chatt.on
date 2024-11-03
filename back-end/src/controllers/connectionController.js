@@ -3,21 +3,20 @@ const jwt = require("jsonwebtoken")
 
 const getToken = (socket) => {
   try {
-    return socket.handshake.headers.cookie
-    ?.split("; ")
-    .find((row) => row.startsWith("access-token="))
-    ?.split("=")[1];
+    const authHeader = socket.handshake.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      return authHeader.split(' ')[1];
+    }
   } catch (error) {
-    return undefined
+    return;
   }
-  
-}
+};
 
 const connectionController = async (socket) => {
   try {
-    
+
     const token = getToken(socket)
-      
+
     if (!token) {
       socket.disconnect();
       return;
