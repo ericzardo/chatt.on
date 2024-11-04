@@ -27,43 +27,50 @@ export function SocketProvider ({ children }) {
 
   useEffect(() => {
     if (!user || !chatName) return;
-    const ws = io(`${import.meta.env.VITE_API_BASE_URL}/chat`, {
-      withCredentials: true,
-      extraHeaders: {
-        "Authorization": `Bearer ${localStorage.getItem("token")}`
-      }
-    });
 
-    const isWhisperChat = chatName.startsWith("@");
+    try {
+      const ws = io(`${import.meta.env.VITE_WS_URL}/chat`, {
+        transports: ["websocket", "polling"],
+        auth: {
+          token: `${localStorage.getItem("token")}`,
+        },
+      });
 
-    ws.on("connect", () => {
-      console.log("Conectado ao WebSocket via Socket.IO");
+      const isWhisperChat = chatName.startsWith("@");
 
-      ws.emit("joinChat", isWhisperChat ? chatName.slice(1) : chatName, user);   
+      ws.on("connect", () => {
+        console.log("Conectado ao WebSocket via Socket.IO");
+        ws.emit("joinChat", isWhisperChat ? chatName.slice(1) : chatName, user);
+        setIsSocketConnected(true);
+        setSocket(ws);
+      });
 
-      setIsSocketConnected(true);
-      setSocket(ws);
-    });
+      ws.on("disconnect", () => {
+        console.log("Desconectado do WebSocket");
+        setIsSocketConnected(false);
+        setSocket(null);
+      });
 
-    ws.on("disconnect", () => {
-      setIsSocketConnected(false);
-    });
+      ws.on("error", (error) => {
+        handleNotification({
+          model: "error",
+          message: error.message || "An unexpected error occurred.",
+        });
+      });
 
-    ws.on("error", (error) => {
+      return () => {
+        if (ws) {
+          ws.emit("leaveChat", isWhisperChat ? chatName.slice(1) : chatName, user);
+          ws.disconnect();
+        }
+      };
+    } catch (error) {
+      console.error("Erro ao conectar ao WebSocket:", error);
       handleNotification({
         model: "error",
-        message: error.message || "An unexpected error occurred.",
+        message: "Failed to connect to WebSocket.",
       });
-    });
-
-    return () => {
-      if (ws) {
-        ws.emit("leaveChat", isWhisperChat ? chatName.slice(1) : chatName, user);
-        ws.disconnect();
-      }
-      
-    };
-
+    }
   }, [chatName, user, handleNotification]);
 
   return (

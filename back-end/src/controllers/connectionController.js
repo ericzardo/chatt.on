@@ -3,9 +3,9 @@ const jwt = require("jsonwebtoken")
 
 const getToken = (socket) => {
   try {
-    const authHeader = socket.handshake.headers['authorization'];
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      return authHeader.split(' ')[1];
+    const token = socket.handshake.auth.token;
+    if (token) {
+      return token;
     }
   } catch (error) {
     return;
@@ -15,7 +15,7 @@ const getToken = (socket) => {
 const connectionController = async (socket) => {
   try {
 
-    const token = getToken(socket)
+    const token = getToken(socket);
 
     if (!token) {
       socket.disconnect();

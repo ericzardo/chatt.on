@@ -1,5 +1,4 @@
 require('dotenv').config();
-console.log('BASE_URL:', process.env.BASE_URL);
 
 const fastify = require("fastify");
 const cors = require("@fastify/cors");
@@ -12,7 +11,6 @@ const registerRoutes = require("./routes")
 const connectionController = require("./controllers/connectionController");
 const chatController = require("./controllers/chatController");
 
-
 const configureFastify = (app) => {
   app.register(cors, corsConfig);
   app.setErrorHandler(errorHandler);
@@ -20,7 +18,6 @@ const configureFastify = (app) => {
   app.setSerializerCompiler(serializerCompiler);
   registerRoutes(app);
 };
-
 const runWebSocket = (server) => {
   const io = require("./lib/io")(server);
 

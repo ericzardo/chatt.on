@@ -2,6 +2,7 @@ const config = {
   development: {
     corsConfig: {
       origin: process.env.BASE_URL,
+      transports: ["websocket", "polling"],
       allowedHeaders: ['Authorization', 'Content-Type'],
     },
     socketConfig: {
@@ -19,6 +20,7 @@ const config = {
     socketConfig: {
       cors: {
         origin: process.env.BASE_URL,
+        transports: ["websocket", "polling"],
         credentials: true,
       }
     }
