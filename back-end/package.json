@@ -34,6 +34,7 @@
     "fastify-type-provider-zod": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.14",
+    "pino": "^9.5.0",
     "pm2": "^5.4.2",
     "react-hook-form": "^7.52.2",
     "socket.io": "^4.8.1",

@@ -1,5 +1,6 @@
 const prisma = require("../lib/prisma")
 const jwt = require("jsonwebtoken")
+const logger = require("../lib/logger");
 
 const getToken = (socket) => {
   try {
@@ -18,6 +19,7 @@ const connectionController = async (socket) => {
     const token = getToken(socket);
 
     if (!token) {
+      logger.warn(`Connection attempt without token from socket: ${socket.id}`);
       socket.disconnect();
       return;
     }
@@ -32,13 +34,16 @@ const connectionController = async (socket) => {
     });
 
     if (!user) {
+      logger.warn(`No user found: disconnecting socket ${socket.id}`);
       socket.disconnect();
       return;
     }
 
+    logger.info(`${user.username}: connected to ${socket.id}`);
+
   } catch (error) {
+    logger.error(`Invalid connection: ${error.message}`);
     socket.disconnect();
-    console.error("Invalid connection:", error.message);
   }
 }
 
