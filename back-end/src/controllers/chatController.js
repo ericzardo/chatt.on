@@ -1,20 +1,67 @@
-const joinChat = require("./events/joinChat");
-const leaveChat = require("./events/leaveChat");
-const sendMessage = require("./events/sendMessage");
-const startWhisper = require("./events/startWhisper");
-const disconnect = require("./events/disconnect");
+const logger = require("../lib/logger");
+const { sendChatHistory, sendUserStatuses } = require("./helpers/chatHelper");
+const { connectUserToRoom, connectUserToWhisper, removeUserFromRoom } = require("./helpers/connectionHelper");
+const { sendMessage } = require("./helpers/messagesHelper");
+const { updateUserChatActivity } = require("./helpers/userHelper");
+const { sendPrivateMessage, startWhisper } = require("./helpers/whisperHelper");
 
-const chatController = (socket, io) => {
-  socket.on("joinChat", (chatName, user) => joinChat(socket, chatName, user));
+module.exports = (socket, io) => {
+  socket.on("JOIN_CHAT", async ({ chatName }) => {
+    const user = socket.user;
 
-  socket.on("leaveChat", (chatName, user) => leaveChat(socket, chatName, user));
+    const isWhisperRoom = chatName.startsWith("@");
 
-  socket.on("sendMessage", (chatName, messageInfos) => sendMessage(socket, chatName, messageInfos, io));
+    if (isWhisperRoom) {
+      const targetUsername = chatName.slice(1);
 
-  socket.on("startWhisper", (user) => startWhisper(socket, user));
+      const whisperRoomName = await connectUserToWhisper(socket, user, targetUsername)
 
-  socket.on("disconnect", () => disconnect(socket));
+      await sendUserStatuses(socket, whisperRoomName);
+      sendChatHistory(socket, whisperRoomName);
 
+      return
+    }
+
+    connectUserToRoom(socket, user, chatName)
+
+    await sendUserStatuses(socket, chatName);
+
+    sendChatHistory(socket, chatName);
+  });
+
+  socket.on("LEAVE_CHAT", async ({ chatName }) => {
+    removeUserFromRoom(socket, chatName)
+
+    await sendUserStatuses(socket, chatName);
+  });
+
+  socket.on("SEND_MESSAGE", async ({ message, chatName }) => {
+    const user = socket.user;
+
+    const isWhisperRoom = chatName.startsWith("@");
+
+    if (isWhisperRoom) {
+      const targetUsername = chatName.slice(1);
+      const infos = { from: user, toUsername: targetUsername }
+
+      sendPrivateMessage(socket, infos, message, io);
+
+      return;
+    }
+
+    sendMessage(socket, { user, message, chatName });
+
+    await updateUserChatActivity(user, chatName);
+
+    socket.emit("CHATS_UPDATED");
+  })
+
+  socket.on("WHISPER_START", ({ targetUser }) => {
+    startWhisper(socket, targetUser);
+  })
+
+  socket.on("disconnect", () => {
+    removeUserFromRoom(socket, socket?.currentChat);
+    logger.info(`${socket.id} disconnected from ${chatName} room.`);
+  });
 };
-
-module.exports = chatController;
