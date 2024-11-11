@@ -14,7 +14,7 @@
   },
   "version": "1.0.0",
   "scripts": {
-    "dev": "npx pm2 start ecosystem.config.js --env development",
+    "dev": "npx pm2 start ecosystem.config.js --env development --watch",
     "start": "pm2 start ecosystem.config.js --env production",
     "seed:permissions": "node prisma/scripts/seed-permissions.js",
     "seed:roles": "node prisma/scripts/seed-roles.js",
