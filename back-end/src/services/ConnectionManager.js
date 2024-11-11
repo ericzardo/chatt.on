@@ -1,46 +1,49 @@
 const prisma = require("../lib/prisma");
-const { ClientError } = require("../errors")
 
 class ConnectionManager {
   constructor() {
     this.connections = new Map();
   }
 
-  addConnection(socket, chatName, user) {
+  addConnection(socket, user, chatName) {
     if (!this.connections.has(chatName)) {
       this.connections.set(chatName, []);
     }
-
     const usersInChat = this.connections.get(chatName);
+
+    const existUser = usersInChat.findIndex(
+      (connectedUser) => connectedUser.id === user.id
+    );
+
+    if (existUser !== -1) {
+      usersInChat.splice(existUser, 1);
+    }
+
     usersInChat.push({ socket_id: socket.id, ...user });
 
     this.connections.set(chatName, usersInChat);
   }
 
-  removeConnection(socket) {
+  removeConnection(socket, chatName) {
+    if (!this.connections.has(chatName)) return
 
-    for (const [chatName, users] of this.connections.entries()) {
+    const usersInChat = this.connections.get(chatName);
+    const updatedUsersInChat = usersInChat.filter(user => user.socket_id !== socket.id);
 
-      const updatedUsers = users.filter(user => user.socket_id !== socket.id);
-      this.connections.set(chatName, updatedUsers);
-
-      if (updatedUsers.length === 0) {
-        this.connections.delete(chatName);
-      }
+    if (updatedUsersInChat.length > 0) {
+      this.connections.set(chatName, updatedUsersInChat);
+    } else {
+      this.connections.delete(chatName);
     }
   }
 
-  getOnlineUsers(chatName) {
+  getOnlineChatUsers(chatName) {
     return this.connections.get(chatName) || [];
-  }
-
-  getAllChatRooms() {
-    return Array.from(this.connections.keys());
   }
 
   async getOfflineUsers(chatName) {
     const allUsers = await this.getAllUsersInChat(chatName);
-    const onlineUsers = this.getOnlineUsers(chatName);
+    const onlineUsers = this.getOnlineChatUsers(chatName);
 
     const offlineUsers = allUsers.filter(user => {
 
@@ -52,44 +55,74 @@ class ConnectionManager {
     return offlineUsers || [];
   }
 
-  async getAllUsersInChat (chatName) {
-    try {
-      return await prisma.user.findMany({
-        where: {
-          chats: {
-            some: {
-              name: chatName,
-            },
+  async getAllUsersInChat(chatName) {
+    return await prisma.user.findMany({
+      where: {
+        chats: {
+          some: {
+            name: chatName,
           },
         },
-        include: {
-          roles: true,
-        },
-      });
-    } catch (error) {
-      throw new ClientError("Error fetching users from the database");
-    }
-    
+      },
+      include: {
+        roles: true,
+      },
+    });
   }
 
-  getChatName(socket) {
-    for (const [chatName, users] of this.connections.entries()) {
-      if (users.some(user => user.socket_id === socket.id)) {
-        return chatName;
+  findTargetChatUser(chatName, target) {
+    const user = this.connections.get(chatName).find(user => user.id === target.id);
+    return user
+  }
+
+  async getTargetUser(socket, username) {
+    const target = await prisma.user.findUnique({
+      where: { username }
+    })
+
+    if (!target) {
+      socket.emit("ERROR", {
+        message: "This user can't receive whispers right now."
+      })
+      return;
+    }
+
+    return target
+  }
+
+  getOnlineUser(socket, target) {
+    for (const [_, usersInChat] of this.connections.entries()) {
+      const user = usersInChat.find(user => user.id === target.id);
+      if (user) {
+        return user
       }
     }
-    return null;
+    socket.emit("ERROR", {
+      message: `${target.username} is not online.`
+    });
+    return;
   }
 
-  getSocketUser(user, io) {
+  async getTargetSocket(username, socket, io) {
+
+    const target = await this.getTargetUser(socket, username)
+
+    if (!target) return;
+
+    const targetUser = await this.getOnlineUser(socket, target);
+    if (!targetUser) return;
+
     for (const users of this.connections.values()) {
-      const existUser = users.find(activeUser => activeUser.username === user.username);
+      const existUser = users.find(activeUser => activeUser.username === targetUser.username);
 
       if (existUser) {
-        return io.of("/chat").sockets.get(existUser.socket_id);
+        return io.sockets.get(existUser.socket_id);
       }
     }
-    return null;
+
+    socket.emit("ERROR", {
+      message: `${targetUser.username} can't receive whispers right now.`
+    })
   }
 }
 

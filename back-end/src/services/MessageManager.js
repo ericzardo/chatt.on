@@ -3,6 +3,18 @@ class MessageManager {
     this.messages = new Map();
   }
 
+  validateMessage = (user, message, socket) => {
+    if (!user || !message) {
+      socket.emit("ERROR", { message: "Failed to send message." });
+      return false;
+    }
+    if (!user.permissions.sendMessages) {
+      socket.emit("ERROR", { message: "You do not have permission to send messages" });
+      return false;
+    }
+    return true;
+  }
+
   addMessage(chatName, message) {
     if (!this.messages.has(chatName)) {
       this.messages.set(chatName, []);
