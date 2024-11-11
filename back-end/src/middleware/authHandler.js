@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
-const prisma = require("../lib/prisma");
 const logger = require("../lib/logger");
 const { ForbiddenError, NotFoundError, ClientError } = require("../errors");
+const getUserFormatted = require("../utils/getUserFormatted")
 
 async function authHandler(request) {
 
@@ -9,7 +9,6 @@ async function authHandler(request) {
     const authHeader = request.headers['authorization'];
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      logger.warn("Authentication failed: No token or malformed token.");
       throw new ForbiddenError("Not authenticated.");
     }
 
@@ -17,47 +16,15 @@ async function authHandler(request) {
 
     const { id } = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: {
-        roles: {
-          include: {
-            permissions: {
-              include: {
-                permission: true
-              }
-            }
-          }
-        },
-        chats: {
-          include: {
-            UserChatActivity: true
-          }
-        }
-      }
-    })
-
+    const user = await getUserFormatted(id);
     if (!user) {
-      logger.warn(`User not found.`);
       throw new NotFoundError("User not found.");
     }
 
-    const highestRole = user.roles.reduce((max, role) => (role.level > max.level ? role : max), { level: -1 });
-
-    if (!highestRole) {
-      logger.warn(`${user.username} has no role with permissions assigned.`);
-      throw new ForbiddenError("No role with permissions assigned.");
-    }
-
-    user.permissions = highestRole.permissions.reduce((perms, rolePerm) => {
-      perms[rolePerm.permission.name] = rolePerm.value;
-      return perms;
-    }, {});
-
     request.user = user;
-    logger.info(`${user.username} authenticated.`);
+
   } catch (error) {
-    logger.error(`Unexpected error during authentication: ${error.message}`);
+    logger.error(`Error during authentication: ${error.message}`);
     throw new ClientError("Invalid or missing token.")
   }
 }
