@@ -6,6 +6,8 @@ const config = {
       allowedHeaders: ['Authorization', 'Content-Type'],
     },
     socketConfig: {
+      pingTimeout: 60000,
+      transports: ['websocket'],
       cors: {
         origin: process.env.BASE_URL,
         credentials: true,
@@ -18,9 +20,10 @@ const config = {
       allowedHeaders: ['Authorization', 'Content-Type'],
     },
     socketConfig: {
+      pingTimeout: 60000,
+      transports: ['websocket', 'polling'],
       cors: {
         origin: process.env.BASE_URL,
-        transports: ["websocket", "polling"],
         credentials: true,
       }
     }

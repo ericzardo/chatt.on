@@ -8,8 +8,8 @@ const { corsConfig } = require('./config');
 const errorHandler = require("./error-handler");
 const registerRoutes = require("./routes")
 
-const connectionController = require("./controllers/connectionController");
-const chatController = require("./controllers/chatController");
+const websocketHandler = require("./middleware/websocketHandler");
+const chatController = require("../src/controllers/chatController");
 
 const configureFastify = (app) => {
   app.register(cors, corsConfig);
@@ -18,26 +18,28 @@ const configureFastify = (app) => {
   app.setSerializerCompiler(serializerCompiler);
   registerRoutes(app);
 };
-const runWebSocket = (server) => {
-  const io = require("./lib/io")(server);
 
-  io.of("/chat").on("connection", (socket) => {
-    connectionController(socket);
-    chatController(socket, io);
-  })
+const runWebSocket = (io) => {
+  const chat = io.of("/chat")
+
+  chat.use(websocketHandler);
+
+  chat.on("connection", (socket) => {
+    chatController(socket, chat)
+  });
 }
 
 const runApp = async () => {
 
   const app = fastify();
+  const io = require("./lib/io")(app.server);
 
   configureFastify(app);
+  runWebSocket(io);
 
   await app.listen({ host: '0.0.0.0', port: process.env.PORT })
     .then(() => {
       console.log(`Server running on http://localhost:${process.env.PORT}`);
-
-      runWebSocket(app.server);
     })
     .catch((error) => {
       console.error("Error starting server:", error);
