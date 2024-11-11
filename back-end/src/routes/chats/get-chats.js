@@ -4,7 +4,6 @@ const ConnectionManager = require("../../services/ConnectionManager")
 
 const { NotFoundError } = require("../../errors");
 
-
 async function getChats(app) {
   app.withTypeProvider().get(
     '/:themeId/chats',
@@ -30,7 +29,7 @@ async function getChats(app) {
       }
 
       const chats = await Promise.all(theme.chats.map(async (chat) => {
-        const onlineUsers = ConnectionManager.getOnlineUsers(chat.name).length;
+        const onlineUsers = ConnectionManager.getOnlineChatUsers(chat.name).length;
         return {
           ...chat,
           online_users: onlineUsers,
@@ -40,7 +39,7 @@ async function getChats(app) {
       return reply.status(200).send({
         chats,
         message: "Chats retrieved successfully"
-      });   
+      });
     },
   )
 }
