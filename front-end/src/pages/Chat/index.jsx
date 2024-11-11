@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 
 import Header from "@components/Header";
-import ChatSideBar from "./ChatSideBar";
-import ChatBody from "./ChatBody";
-import ChatInfos from "./ChatInfos";
+import ChatSideBar from "./Sidebar";
+import ChatBody from "./Body";
+import ChatDetails from "./Details";
 import useUser from "@hooks/useUser";
 
 function ChatPage () {
@@ -57,7 +57,7 @@ function ChatPage () {
           handleChatInfosOpen={handleChatInfosOpen}
           handleChatSidebarOpen={handleChatSidebarOpen}
         />
-        <ChatInfos 
+        <ChatDetails 
           isMobile={isMobile} 
           isLoading={isLoading} 
           isChatInfosOpen={isChatInfosOpen}
