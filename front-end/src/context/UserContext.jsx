@@ -27,7 +27,6 @@ export function UserProvider ({ children }) {
   const revalidateUser = useCallback(async () => {
     try {
       await refetch();
-
     } catch (error) {
       queryClient.removeQueries(["user"]);
     }

@@ -3,11 +3,12 @@ import { useLocation } from "react-router-dom";
 import { io } from "socket.io-client";
 import PropTypes from "prop-types";
 import useUser from "@hooks/useUser";
+
+import { handleConnect, handleLeave } from "src/controller/websocket";
 import useNotification from "@hooks/useNotification";
 
 const SocketContext = createContext({
   socket: null,
-  setSocket: () => {},
 });
 
 SocketProvider.propTypes = {
@@ -16,65 +17,70 @@ SocketProvider.propTypes = {
 
 export function SocketProvider ({ children }) {
   const location = useLocation();
-
   const { user } = useUser();
   const { handleNotification } = useNotification();
-
-  const [ socket, setSocket ] = useState();
-  const [ isSocketConnected, setIsSocketConnected ] = useState(false);
-
+  
   const chatName = location.pathname.split("/c/")[1];
+  
+  const [ socket, setSocket ] = useState(null);
 
   useEffect(() => {
-    if (!user || !chatName) return;
+    if (socket) return;
 
-    try {
-      const ws = io(`${import.meta.env.VITE_WS_URL}/chat`, {
-        transports: ["websocket", "polling"],
-        auth: {
-          token: `${localStorage.getItem("token")}`,
-        },
-      });
+    setSocket(io(`${import.meta.env.VITE_WS_URL}/chat`, {
+      transports: ["websocket"],
+      reconnection: false,
+      reconnectionAttempts: 1,
+      auth: {
+        token: `${localStorage.getItem("token")}`,
+      },
+    }));
 
-      const isWhisperChat = chatName.startsWith("@");
+    return () => {
+      if (socket?.connected) {
+        socket.disconnect();
+      }
+    };
+  }, [socket]);
 
-      ws.on("connect", () => {
-        console.log("Conectado ao WebSocket via Socket.IO");
-        ws.emit("joinChat", isWhisperChat ? chatName.slice(1) : chatName, user);
-        setIsSocketConnected(true);
-        setSocket(ws);
-      });
+  useEffect(() => {
+    if (!socket || !user?.id || !chatName) return;
+    
+    if (socket.currentChat && socket.currentChat !== chatName) {
+      handleLeave(socket, socket.currentChat);
+    }
 
-      ws.on("disconnect", () => {
-        console.log("Desconectado do WebSocket");
-        setIsSocketConnected(false);
-        setSocket(null);
-      });
-
-      ws.on("error", (error) => {
-        handleNotification({
-          model: "error",
-          message: error.message || "An unexpected error occurred.",
-        });
-      });
-
-      return () => {
-        if (ws) {
-          ws.emit("leaveChat", isWhisperChat ? chatName.slice(1) : chatName, user);
-          ws.disconnect();
-        }
-      };
-    } catch (error) {
-      console.error("Erro ao conectar ao WebSocket:", error);
-      handleNotification({
-        model: "error",
-        message: "Failed to connect to WebSocket.",
+    if (socket.connected) {
+      handleConnect(socket, chatName);
+      socket.currentChat = chatName;
+    } else {
+      socket.on("connect", () => {
+        console.log("socket connected:", socket.id);
+        handleConnect(socket, chatName);
+        socket.currentChat = chatName;
       });
     }
-  }, [chatName, user, handleNotification]);
+
+    socket.on("ERROR", (error) => {
+      handleNotification({
+        model: "error", 
+        message: error.message || "An unexpected error occurred."
+      });
+    });
+
+    return () => {
+      if (socket?.connected && socket.currentChat === chatName) {
+        handleLeave(socket, chatName);
+        socket.currentChat = null;
+      }
+      socket.off("connect");
+      socket.off("ERROR");
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket, chatName, user?.id]);
 
   return (
-    <SocketContext.Provider value={{ socket, setSocket, isSocketConnected }}>
+    <SocketContext.Provider value={{ socket }}>
       {children}
     </SocketContext.Provider>
   );
