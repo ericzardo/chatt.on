@@ -5,6 +5,12 @@ const fs = require("fs");
 const r2 = require("../../src/lib/r2");
 const { PutObjectCommand } = require('@aws-sdk/client-s3');
 
+function isValidImage(file) {
+  const validExtensions = ['.webp'];
+  const ext = path.extname(file).toLowerCase();
+  return validExtensions.includes(ext);
+}
+
 async function main() {
   const avatarsDir = path.join(__dirname, "../../public/avatars");
 
@@ -12,6 +18,11 @@ async function main() {
 
   let i = 1;
   for (const file of files) {
+    if (!isValidImage(file)) {
+      console.log(`Skipping non-image file: ${file}`);
+      continue;
+    }
+
     const filePath = path.join(avatarsDir, file);
     const fileStream = fs.createReadStream(filePath);
 
