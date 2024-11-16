@@ -14,8 +14,8 @@
   },
   "version": "1.0.0",
   "scripts": {
-    "dev": "npx pm2 start ecosystem.config.js --env development --watch",
-    "start": "pm2 start ecosystem.config.js --env production",
+    "dev": "nodemon --watch ./src/server.js",
+    "start": "node ./src/server.js",
     "seed:permissions": "node prisma/scripts/seed-permissions.js",
     "seed:roles": "node prisma/scripts/seed-roles.js",
     "seed:admin": "node prisma/scripts/seed-admin.js",
@@ -35,7 +35,6 @@
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.14",
     "pino": "^9.5.0",
-    "pm2": "^5.4.2",
     "react-hook-form": "^7.52.2",
     "socket.io": "^4.8.1",
     "uuid": "^10.0.0",
