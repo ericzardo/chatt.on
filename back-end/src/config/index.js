@@ -21,7 +21,6 @@ const config = {
     },
     socketConfig: {
       pingTimeout: 60000,
-      path: "/socket",
       transports: ['websocket', 'polling'],
       cors: {
         origin: process.env.BASE_URL,

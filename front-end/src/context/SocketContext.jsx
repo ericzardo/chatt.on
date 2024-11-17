@@ -28,7 +28,7 @@ export function SocketProvider ({ children }) {
     if (socket) return;
 
     setSocket(io(`${import.meta.env.VITE_WS_URL}/chat`, {
-      transports: ["websocket"],
+      transports: ["websocket", "polling"],
       reconnection: false,
       reconnectionAttempts: 1,
       auth: {
