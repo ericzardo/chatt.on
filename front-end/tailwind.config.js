@@ -7,6 +7,9 @@ export default {
   darkMode: "class",
   theme: {
     extend: {
+      zIndex: {
+        max: 999,
+      },
       keyframes: {
         progressBarShrink: {
           "0%": { width: "100%" },

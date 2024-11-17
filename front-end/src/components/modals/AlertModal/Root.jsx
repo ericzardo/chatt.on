@@ -10,7 +10,7 @@ AlertModalRoot.propTypes = {
 };
 
 const messageModal = tv({
-  base: "absolute m-auto h-fit left-0 right-0 top-4 flex flex-col justify-between p-4 pr-7 w-2/5 min-w-96 rounded-lg overflow-hidden",
+  base: "absolute m-auto h-fit left-0 right-0 top-4 flex flex-col justify-between p-4 pr-7 w-2/5 min-w-96 rounded-lg overflow-hidden z-max",
   variants: {
     model: {
       default: "bg-zinc-200 text-zinc-800 border-zinc-800",
