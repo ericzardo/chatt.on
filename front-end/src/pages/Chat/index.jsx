@@ -41,11 +41,11 @@ function ChatPage () {
 
   return (
 
-    <div className="w-full h-[100vh] flex flex-col">
+    <div className="w-full h-screen flex flex-col">
       <Header isMobile={isMobile} />
 
       <span className="flex flex-1 min-h-0 overflow-hidden w-full p-2 gap-2">
-        <ChatSideBar 
+        <ChatSideBar
           isMobile={isMobile} 
           isLoading={isLoading} 
           isChatSidebarOpen={isChatSidebarOpen}
