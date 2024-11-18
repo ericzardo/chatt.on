@@ -43,7 +43,7 @@ const withClickOutside = (WrappedComponent) => {
           className="flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
-          <WrappedComponent {...props} />
+          <WrappedComponent onClose={onClose} {...props} />
         </div>
       </div>
     ) : (
@@ -52,7 +52,7 @@ const withClickOutside = (WrappedComponent) => {
         className={`fixed z-50 ${isOpen ? "visible" : "hidden"}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <WrappedComponent {...props} />
+        <WrappedComponent onClose={onClose} {...props} />
       </div>
     );
   };

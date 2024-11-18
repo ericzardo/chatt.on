@@ -49,6 +49,7 @@ function AuthProtection ({ children }) {
   }, [user, revalidateUser, navigate, chatName, handleNotification]);
 
   const closeGuestUserModal = useCallback(() => {
+    console.log("B");
     setChatSelected(null);
     navigate("/");
   }, [navigate]);
