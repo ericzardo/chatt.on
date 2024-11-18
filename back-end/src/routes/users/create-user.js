@@ -60,7 +60,7 @@ async function createUser(app) {
       },
     },
     async (request, reply) => {
-      const { 
+      const {
         username,
         email = null,
         password,
@@ -92,8 +92,8 @@ async function createUser(app) {
       }
 
       const userRoles = roles.includes(defaultRole.id)
-      ? roles
-      : [...roles, defaultRole.id];
+        ? roles
+        : [...roles, defaultRole.id];
 
       let hashedPassword = "";
       const profile_picture_url = `${process.env.R2_PUBLIC_ENDPOINT}/avatar-${Math.floor(Math.random() * 9) + 1}`
@@ -116,7 +116,7 @@ async function createUser(app) {
 
         const resetToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         await sendPasswordResetEmail(username, email, resetToken);
-        
+
         return reply.status(201).send({
           user: user.id,
           message: `User created and password reset email sent.`

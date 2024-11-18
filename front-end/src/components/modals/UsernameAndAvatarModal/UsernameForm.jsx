@@ -42,18 +42,17 @@ function UsernameAndAvatarModalUsernameForm ({ chat, selectedAvatar }) {
     try {
       const response = await createUserWithChat({ ...data, selectedAvatar }, chat);
 
-      if (!response.user) {
+      if (!response.accessToken) {
         handleNotification({
           model: "error",
-          message: "Failed to create user. Please try again."
+          message: response.error || "An unexpected error occurred.",
         });
         return;
       }
-
+      localStorage.setItem("token", response.accessToken);
       await revalidateUser();
-
       navigate(`/c/${chat.name}`);
-
+      
     } catch (error) {
       handleNotification({
         model: "error",

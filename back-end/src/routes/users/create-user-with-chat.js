@@ -19,9 +19,11 @@ async function createUserWithChat(app) {
       },
     },
     async (request, reply) => {
+      console.log("Rota /users/:chatId foi atingida");
       const { chatId } = request.params;
       const { username, is_temporary_user, selectedAvatar } = request.body;
 
+      console.log("Checking if username exists");
       const existsUserByUsername = await prisma.user.findFirst({
         where: { username }
       })
@@ -30,6 +32,7 @@ async function createUserWithChat(app) {
         throw new ClientError("Username already taken.");
       }
 
+      console.log("Checking if default user role exists");
       const defaultRole = await prisma.role.findUnique({
         where: { name: "user" }
       });
@@ -38,6 +41,7 @@ async function createUserWithChat(app) {
         throw new ClientError("Default Role not created.");
       }
 
+      console.log("Creating user on database and connecting on chat");
       const user = await prisma.$transaction(async prisma => {
         const user = await prisma.user.create({
           data: {
@@ -52,7 +56,7 @@ async function createUserWithChat(app) {
             },
           },
         })
-  
+
         await prisma.user.update({
           where: { id: user.id },
           data: {
@@ -64,24 +68,21 @@ async function createUserWithChat(app) {
 
         return user;
       })
-      
+
       if (!user) {
         throw new ClientError("Failed to create a user");
       }
 
+      console.log("Creating access token and sending on response");
       const accessToken = jwt.sign(
         { id: user.id, is_temporary_user: true },
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
       );
 
-      reply.setCookie('access-token', accessToken, { 
-        maxAge: 3600000,
-        path: "/"
-      });
-
       return reply.status(201).send({
         user: user.id,
+        accessToken,
         message: `User created and connected to chat successfully.`,
       });
     }
