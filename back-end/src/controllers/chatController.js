@@ -1,4 +1,3 @@
-const logger = require("../lib/logger");
 const { sendChatHistory, sendUserStatuses } = require("./helpers/chatHelper");
 const { connectUserToRoom, connectUserToWhisper, removeUserFromRoom } = require("./helpers/connectionHelper");
 const { sendMessage } = require("./helpers/messagesHelper");
@@ -62,6 +61,5 @@ module.exports = (socket, io) => {
 
   socket.on("disconnect", () => {
     removeUserFromRoom(socket, socket?.currentChat);
-    logger.info(`${socket.id} disconnected from ${chatName} room.`);
   });
 };
